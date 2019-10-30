@@ -1,0 +1,14 @@
+# Automate your GitHub workflows using Azure CLI scripts.
+name: 'Azrure CLI'
+description: 'The action is used to execute Azure CLI commands'
+inputs:
+  inlineScript:
+    description: 'Specify the script here'
+    required: true
+  azcliversion:
+    description: 'Azure CLI version to be used to execute the script'
+    required: false
+    default: 'latest'
+runs:
+  using: 'node12'
+  main: 'lib/main.js'
