@@ -1,3 +1,69 @@
+# Azure CLI GitHub Action
+
+
+With Azure CLI GitHub Action, you can automate your workflow by executing [Azure CLI](https://github.com/Azure/azure-cli) commands to manage Azure resources inside of an Action.
+
+The definition of this GitHub Action is in [action.yml](https://github.com/Azure/CLI/blob/master/action.yml).
+
+
+## Dependencies on other GitHub Actions
+* [Azure Login](https://github.com/Azure/login) Login with your Azure credentials 
+
+# Sample workflow that executes the script on a Azure CLI version
+
+The action executes the Azure CLI Bash script on a user defined Azure CLI version. Read more about various Azure CLI versions [here](https://github.com/Azure/azure-cli/releases).
+
+- `azcliversion` – **Optional** Example: 2.0.72, Default: latest
+- `inlineScript` – **Required** 
+
+```
+# File: .github/workflows/workflow.yml
+
+on: [push]
+
+name: AzureCLISample
+
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Azure CLI script
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.0.72
+        inlineScript: |
+          az --version
+          az account show
+```
+* Now in the workflow file in your branch: .github/workflows/workflow.yml replace the secret in Azure login action with your secret (Refer to the example above)
+
+# Azure CLI metadata file
+
+```
+# File: action.yml
+
+# Automate your GitHub workflows using Azure CLI scripts.
+name: 'Azrure CLI'
+description: 'The action is used to execute Azure CLI commands'
+inputs:
+  inlineScript:
+    description: 'Specify the script here'
+    required: true
+  azcliversion:
+    description: 'Azure CLI version to be used to execute the script'
+    required: false
+    default: 'latest'
+runs:
+  using: 'node12'
+  main: 'lib/main.js'
+```
 
 # Contributing
 
