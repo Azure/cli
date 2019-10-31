@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/Azure/CLI.git"
   },
-  "author": "Jalaj Minda",
+  "author": "Microsoft",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^12.7.11",
