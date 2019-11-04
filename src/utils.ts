@@ -14,6 +14,20 @@ export const createScriptFile = async (inlineScript: string): Promise<string> =>
     return fileName;
 }
 
+
+export const deleteFile = async (filePath: string) => {
+    if (fs.existsSync(filePath)) {
+        try {
+            //delete the publishsetting file created earlier
+            fs.unlinkSync(filePath);
+        }
+        catch (err) {
+            //error while deleting should not result in task failure
+            console.error(err.toString());
+        }
+    }
+}
+
 export const giveExecutablePermissionsToFile = async (filePath: string): Promise<number> => await exec.exec(`chmod +x ${filePath}`, [], { silent: true })
 
 export const getCurrentTime = (): number => {
