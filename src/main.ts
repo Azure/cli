@@ -113,10 +113,11 @@ const executeDockerScript = async (dockerCommand: string): Promise<void> => {
     try {
         await exec.exec(`"${dockerTool}" ${dockerCommand}`, [], execOptions)
     } catch (error) {
+        throw error;
+    }
+    finally {
         if (errorStream) {
             throw new Error(errorStream);
-        } else {
-            throw error;
         }
     }
 }
