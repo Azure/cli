@@ -1,5 +1,6 @@
 import stream = require('stream');
 import * as exec from '@actions/exec';
+import * as core from '@actions/core';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
@@ -18,12 +19,10 @@ export const createScriptFile = async (inlineScript: string): Promise<string> =>
 export const deleteFile = async (filePath: string) => {
     if (fs.existsSync(filePath)) {
         try {
-            //delete the publishsetting file created earlier
             fs.unlinkSync(filePath);
         }
         catch (err) {
-            //error while deleting should not result in task failure
-            console.error(err.toString());
+            core.warning(err.toString());
         }
     }
 }

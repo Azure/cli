@@ -7,12 +7,12 @@ import * as path from 'path';
 import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime } from './utils';
 
 const START_SCRIPT_EXECUTION_MARKER: string = 'Azure CLI GitHub Action: Starting script execution';
-const BASH_ARG: string = `bash --noprofile --norc -eo pipefail -c `;
+const BASH_ARG: string = `bash --noprofile --norc -e `;
 const CONTAINER_WORKSPACE: string = '/github/workspace';
 const CONTAINER_TEMP_DIRECTORY: string = '/_temp';
 
 const run = async () => {
-    var fileName: string = '';
+    var scriptFileName: string = '';
     const CONTAINER_NAME = `MICROSOFT_AZURE_CLI_${getCurrentTime()}_CONTAINER`;
     try {
         if (process.env.RUNNER_OS != 'Linux') {
@@ -32,9 +32,9 @@ const run = async () => {
             core.setFailed('Please enter a valid script.');
             return;
         }
-        inlineScript = `set -eo >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
-        fileName = await createScriptFile(inlineScript);
-        let startCommand: string = ` ${BASH_ARG}${CONTAINER_TEMP_DIRECTORY}/${fileName} `;
+        inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
+        scriptFileName = await createScriptFile(inlineScript);
+        let startCommand: string = ` ${BASH_ARG}${CONTAINER_TEMP_DIRECTORY}/${scriptFileName} `;
 
         /*
         For the docker run command, we are doing the following
@@ -47,8 +47,8 @@ const run = async () => {
         command += ` -v ${process.env.HOME}/.azure:/root/.azure -v ${TEMP_DIRECTORY}:${CONTAINER_TEMP_DIRECTORY} `;
         command += `-e GITHUB_WORKSPACE=${CONTAINER_WORKSPACE} --name ${CONTAINER_NAME}`;
         command += ` mcr.microsoft.com/azure-cli:${azcliversion} ${startCommand}`;
-
-        await executeDockerScript(command);
+        console.log(`${START_SCRIPT_EXECUTION_MARKER} via docker image mcr.microsoft.com/azure-cli:${azcliversion}`);
+        await executeDockerCommand(command);
         console.log("az script ran successfully.");
     } catch (error) {
         console.log("Azure CLI action failed.\n\n", error);
@@ -56,10 +56,10 @@ const run = async () => {
     }
     finally {
         // clean up
-        const filePath: string = path.join(TEMP_DIRECTORY, fileName);
-        await deleteFile(filePath);
-        // delete conatinaer
-        await executeDockerScript(` container rm ${CONTAINER_NAME} `);
+        const scriptFilePath: string = path.join(TEMP_DIRECTORY, scriptFileName);
+        await deleteFile(scriptFilePath);
+        console.log("cleaning up conatiner");
+        await executeDockerCommand(` container rm --force ${CONTAINER_NAME} `, true);
     }
 };
 
@@ -92,7 +92,7 @@ const getAllAzCliVersions = async (): Promise<Array<string>> => {
     return [];
 }
 
-const executeDockerScript = async (dockerCommand: string): Promise<void> => {
+const executeDockerCommand = async (dockerCommand: string, continueOnError: boolean = false): Promise<void> => {
 
     const dockerTool: string = await io.which("docker", true);
     var errorStream: string = '';
@@ -114,12 +114,16 @@ const executeDockerScript = async (dockerCommand: string): Promise<void> => {
     try {
         await exec.exec(`"${dockerTool}" ${dockerCommand}`, [], execOptions)
     } catch (error) {
-        throw error;
+        if (!continueOnError) {
+            throw error;
+        }
+        core.warning(error);
     }
     finally {
-        if (errorStream) {
+        if (errorStream && !continueOnError) {
             throw new Error(errorStream);
         }
+        core.warning(errorStream);
     }
 }
 
