@@ -40,8 +40,8 @@ jobs:
       with:
         azcliversion: 2.0.72
         inlineScript: |
-          az --version
           az account show
+          az storage -h
 ```
 
 ### Configure Azure credentials as GitHub Secret:
