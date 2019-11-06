@@ -14,8 +14,8 @@ The definition of this GitHub Action is in [action.yml](https://github.com/Azure
 ## Sample workflow 
 
 ### Dependencies on other GitHub Actions
-* [Azure Login](https://github.com/Azure/login) Login with your Azure credentials 
-
+* [Azure Login](https://github.com/Azure/login) – **Required** Login with your Azure credentials 
+* [Checkout](https://github.com/actions/checkout) – **Optional** To execute the scripts present in your repository
 ### Workflow to execute an AZ CLI script of a specific CLI version
 ```
 # File: .github/workflows/workflow.yml
@@ -36,13 +36,45 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     - name: Azure CLI script
-      uses: azure/CLI@v1
+      uses: azure/CLI@v0-beta
       with:
         azcliversion: 2.0.72
         inlineScript: |
           az account show
           az storage -h
 ```
+
+### Workflow to execute an AZ CLI script of a specific CLI version via file present in your repository.
+```
+# File: .github/workflows/workflowForFile.yml
+
+on: [push]
+
+name: AzureCLISampleForFile
+
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Azure Login
+      uses: azure/login@v0-beta
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Azure CLI script file
+      uses: azure/CLI@v0-beta
+      with:
+        azcliversion: 2.0.72
+        inlineScript: |
+          chmod +x $GITHUB_WORKSPACE/sampleScript.sh
+          $GITHUB_WORKSPACE/sampleScript.sh
+```
+  * [GITHUB_WORKSPACE](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners) is the environment variable provided by GitHub which represents the root of your repository.
 
 ### Configure Azure credentials as GitHub Secret:
 
