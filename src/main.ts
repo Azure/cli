@@ -6,7 +6,7 @@ import * as path from 'path';
 
 import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime } from './utils';
 
-const START_SCRIPT_EXECUTION_MARKER: string = 'Azure CLI GitHub Action: Starting script execution';
+const START_SCRIPT_EXECUTION_MARKER: string = `Starting script execution via docker image mcr.microsoft.com/azure-cli:`;
 const BASH_ARG: string = `bash --noprofile --norc -e `;
 const CONTAINER_WORKSPACE: string = '/github/workspace';
 const CONTAINER_TEMP_DIRECTORY: string = '/_temp';
@@ -47,18 +47,18 @@ const run = async () => {
         command += ` -v ${process.env.HOME}/.azure:/root/.azure -v ${TEMP_DIRECTORY}:${CONTAINER_TEMP_DIRECTORY} `;
         command += `-e GITHUB_WORKSPACE=${CONTAINER_WORKSPACE} --name ${CONTAINER_NAME}`;
         command += ` mcr.microsoft.com/azure-cli:${azcliversion} ${startCommand}`;
-        console.log(`${START_SCRIPT_EXECUTION_MARKER} via docker image mcr.microsoft.com/azure-cli:${azcliversion}`);
+        console.log(`${START_SCRIPT_EXECUTION_MARKER}${azcliversion}`);
         await executeDockerCommand(command);
         console.log("az script ran successfully.");
     } catch (error) {
-        console.log("Azure CLI action failed.\n\n", error);
+        core.error(error);
         core.setFailed(error.stderr);
     }
     finally {
         // clean up
         const scriptFilePath: string = path.join(TEMP_DIRECTORY, scriptFileName);
         await deleteFile(scriptFilePath);
-        console.log("cleaning up conatiner");
+        console.log("cleaning up container");
         await executeDockerCommand(` container rm --force ${CONTAINER_NAME} `, true);
     }
 };
@@ -96,23 +96,28 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
 
     const dockerTool: string = await io.which("docker", true);
     var errorStream: string = '';
+    var shouldOutputErrorStream: boolean = false;
     var execOptions: any = {
         outStream: new NullOutstreamStringWritable({ decodeStrings: false }),
         listeners: {
             stdout: (data: any) => console.log(data.toString()), //to log the script output while the script is running.
-            errline: (data: any) => {
-                if (data.toString().trim() === START_SCRIPT_EXECUTION_MARKER) {
-                    errorStream = ''; // Flush the container logs. After this, script error logs will be tracked.
+            errline: (data: string) => {
+                if (!shouldOutputErrorStream) {
+                    errorStream += data + os.EOL;
                 }
                 else {
-                    errorStream += data.toString() + os.EOL;
+                    console.log(data);
+                }
+                if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
+                    shouldOutputErrorStream = true;
+                    errorStream = ''; // Flush the container logs. After this, script error logs will be tracked.
                 }
             }
         }
     };
-
+    var exitCode;
     try {
-        await exec.exec(`"${dockerTool}" ${dockerCommand}`, [], execOptions)
+        exitCode = await exec.exec(`"${dockerTool}" ${dockerCommand}`, [], execOptions)
     } catch (error) {
         if (!continueOnError) {
             throw error;
@@ -120,8 +125,8 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         core.warning(error);
     }
     finally {
-        if (errorStream && !continueOnError) {
-            throw new Error(errorStream);
+        if (exitCode !== 0 && !continueOnError) {
+            throw new Error(errorStream || 'az cli script failed.');
         }
         core.warning(errorStream);
     }

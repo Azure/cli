@@ -45,4 +45,3 @@ export class NullOutstreamStringWritable extends stream.Writable {
         }
     }
 };
-
