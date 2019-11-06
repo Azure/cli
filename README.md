@@ -36,7 +36,7 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     - name: Azure CLI script
-      uses: azure/CLI@v0-beta
+      uses: azure/CLI@v1
       with:
         azcliversion: 2.0.72
         inlineScript: |
@@ -59,7 +59,7 @@ jobs:
     steps:
     
     - name: Azure Login
-      uses: azure/login@v0-beta
+      uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -67,7 +67,7 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Azure CLI script file
-      uses: azure/CLI@v0-beta
+      uses: azure/CLI@v1
       with:
         azcliversion: 2.0.72
         inlineScript: |

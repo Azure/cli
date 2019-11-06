@@ -58,7 +58,7 @@ const run = async () => {
         // clean up
         const scriptFilePath: string = path.join(TEMP_DIRECTORY, scriptFileName);
         await deleteFile(scriptFilePath);
-        console.log("cleaning up container");
+        console.log("cleaning up container...");
         await executeDockerCommand(` container rm --force ${CONTAINER_NAME} `, true);
     }
 };
@@ -117,7 +117,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
     };
     var exitCode;
     try {
-        exitCode = await exec.exec(`"${dockerTool}" ${dockerCommand}`, [], execOptions)
+        exitCode = await exec.exec(`"${dockerTool}" ${dockerCommand}`, [], execOptions);
     } catch (error) {
         if (!continueOnError) {
             throw error;
@@ -128,7 +128,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         if (exitCode !== 0 && !continueOnError) {
             throw new Error(errorStream || 'az cli script failed.');
         }
-        core.warning(errorStream);
+        core.warning(errorStream)
     }
 }
 
