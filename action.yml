@@ -1,5 +1,5 @@
 # Azure CLI Action
-name: 'Azure CLI'
+name: 'Azure CLI Action'
 description: 'Automate your GitHub workflows using Azure CLI scripts.'
 inputs:
   inlineScript:
