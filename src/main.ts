@@ -35,7 +35,12 @@ const run = async () => {
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
         let startCommand: string = ` ${BASH_ARG}${CONTAINER_TEMP_DIRECTORY}/${scriptFileName} `;
-
+        let gitHubEnvironmentVariables = '';
+        for (let key in process.env){
+            if (key.toUpperCase().startsWith("GITHUB_") && key.toUpperCase() !== 'GITHUB_WORKSPACE' && process.env[key]){
+                gitHubEnvironmentVariables += ` -e ${key}=${process.env[key]} `;
+            }
+        }
         /*
         For the docker run command, we are doing the following
         - Set the working directory for docker continer
@@ -45,7 +50,8 @@ const run = async () => {
         */
         let command: string = `run --workdir ${CONTAINER_WORKSPACE} -v ${process.env.GITHUB_WORKSPACE}:${CONTAINER_WORKSPACE} `;
         command += ` -v ${process.env.HOME}/.azure:/root/.azure -v ${TEMP_DIRECTORY}:${CONTAINER_TEMP_DIRECTORY} `;
-        command += `-e GITHUB_WORKSPACE=${CONTAINER_WORKSPACE} -e GITHUB_SHA=${process.env.GITHUB_SHA} `;
+        command += ` ${gitHubEnvironmentVariables} `;
+        command += `-e GITHUB_WORKSPACE=${CONTAINER_WORKSPACE} `;
         command += `--name ${CONTAINER_NAME} `;
         command += ` mcr.microsoft.com/azure-cli:${azcliversion} ${startCommand}`;
         console.log(`${START_SCRIPT_EXECUTION_MARKER}${azcliversion}`);
