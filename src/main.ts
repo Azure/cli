@@ -4,7 +4,7 @@ import * as io from '@actions/io';
 import * as os from 'os';
 import * as path from 'path';
 
-import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime } from './utils';
+import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime, checkIfEnvironmentVariableIsOmitted } from './utils';
 
 const START_SCRIPT_EXECUTION_MARKER: string = `Starting script execution via docker image mcr.microsoft.com/azure-cli:`;
 const BASH_ARG: string = `bash --noprofile --norc -e `;
@@ -35,10 +35,11 @@ const run = async () => {
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
         let startCommand: string = ` ${BASH_ARG}${CONTAINER_TEMP_DIRECTORY}/${scriptFileName} `;
-        let gitHubEnvironmentVariables = '';
+        let environmentVariables = '';
         for (let key in process.env){
-            if (key.toUpperCase().startsWith("GITHUB_") && key.toUpperCase() !== 'GITHUB_WORKSPACE' && process.env[key]){
-                gitHubEnvironmentVariables += ` -e "${key}=${process.env[key]}" `;
+            // if (key.toUpperCase().startsWith("GITHUB_") && key.toUpperCase() !== 'GITHUB_WORKSPACE' && process.env[key]){
+            if(!checkIfEnvironmentVariableIsOmitted(key) && process.env[key] ){
+                environmentVariables += ` -e "${key}=${process.env[key]}" `;
             }
         }
         /*
@@ -50,7 +51,7 @@ const run = async () => {
         */
         let command: string = `run --workdir ${CONTAINER_WORKSPACE} -v ${process.env.GITHUB_WORKSPACE}:${CONTAINER_WORKSPACE} `;
         command += ` -v ${process.env.HOME}/.azure:/root/.azure -v ${TEMP_DIRECTORY}:${CONTAINER_TEMP_DIRECTORY} `;
-        command += ` ${gitHubEnvironmentVariables} `;
+        command += ` ${environmentVariables} `;
         command += `-e GITHUB_WORKSPACE=${CONTAINER_WORKSPACE} `;
         command += `--name ${CONTAINER_NAME} `;
         command += ` mcr.microsoft.com/azure-cli:${azcliversion} ${startCommand}`;
