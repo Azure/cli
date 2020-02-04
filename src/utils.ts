@@ -92,9 +92,5 @@ export const checkIfEnvironmentVariableIsOmitted = (key: string): boolean => {
         }
     }
 
-    let matched = omitEnvironmentVariablesWithPrefix.filter((prefix: string) => key.toUpperCase().startsWith(prefix) );
-    if (matched.length > 0){
-        return true;
-    }
-    return false;
+    return omitEnvironmentVariablesWithPrefix.some((prefix: string) => key.toUpperCase().startsWith(prefix));
 }

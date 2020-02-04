@@ -38,7 +38,7 @@ const run = async () => {
         let environmentVariables = '';
         for (let key in process.env){
             // if (key.toUpperCase().startsWith("GITHUB_") && key.toUpperCase() !== 'GITHUB_WORKSPACE' && process.env[key]){
-            if(!checkIfEnvironmentVariableIsOmitted(key) && process.env[key] ){
+            if(!checkIfEnvironmentVariableIsOmitted(key) && process.env[key]){
                 environmentVariables += ` -e "${key}=${process.env[key]}" `;
             }
         }
