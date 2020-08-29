@@ -78,7 +78,7 @@ jobs:
 
 ### Configure Azure credentials as GitHub Secret:
 
-To use any credentials like Azure Service Principal,add them as [secrets](https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables) in the GitHub repository and then use them in the workflow.
+To use any credentials like Azure Service Principal,add them as [secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets) in the GitHub repository and then use them in the workflow.
 
 Follow the steps to configure the secret:
   * Define a new secret under your repository settings, Add secret menu
