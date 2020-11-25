@@ -61,6 +61,7 @@ export const checkIfEnvironmentVariableIsOmitted = (key: string): boolean => {
         'CONDA',
         'AGENT_TOOLSDIRECTORY',
         'GITHUB_WORKSPACE',
+        'GITHUB_ENV',
         'RUNNER_PERFLOG',
         'RUNNER_WORKSPACE',
         'RUNNER_TEMP',
