@@ -1,0 +1,42 @@
+on:
+  push:
+    branches:
+      - master
+
+name: build-release
+
+jobs:
+  build:
+    name: build-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@master
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+
+      - run: sudo npm i -g @vercel/ncc
+
+      - run: npm install 
+
+      - name: Compile files
+        run: |
+          ncc build -C -m src/main.ts
+
+      - name: Commit Files
+        continue-on-error: true # commit will fail if the code wasn't changed. Prevent the build to fail in this case.
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          git add dist/index.js -f
+          git commit -m "Add changes"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: master
