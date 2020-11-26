@@ -36,8 +36,9 @@ const run = async () => {
         scriptFileName = await createScriptFile(inlineScript);
         let startCommand: string = ` ${BASH_ARG}${CONTAINER_TEMP_DIRECTORY}/${scriptFileName} `;
         let environmentVariables = '';
-        for (let key in process.env){
-            if(!checkIfEnvironmentVariableIsOmitted(key) && process.env[key]){
+        for (let key in process.env) {
+            // if (key.toUpperCase().startsWith("GITHUB_") && key.toUpperCase() !== 'GITHUB_WORKSPACE' && process.env[key]){
+            if (!checkIfEnvironmentVariableIsOmitted(key) && process.env[key]) {
                 environmentVariables += ` -e "${key}=${process.env[key]}" `;
             }
         }
@@ -48,10 +49,15 @@ const run = async () => {
         - voulme mount .azure session token file between host and container,
         - volume mount temp directory between host and container, inline script file is created in temp directory
         */
+
+        let github_env_file_relative_path = path.relative(TEMP_DIRECTORY, process.env.GITHUB_ENV);;
+        const CONTAINER_GITHUB_ENV = path.resolve(CONTAINER_TEMP_DIRECTORY, github_env_file_relative_path);
+
         let command: string = `run --workdir ${CONTAINER_WORKSPACE} -v ${process.env.GITHUB_WORKSPACE}:${CONTAINER_WORKSPACE} `;
         command += ` -v ${process.env.HOME}/.azure:/root/.azure -v ${TEMP_DIRECTORY}:${CONTAINER_TEMP_DIRECTORY} `;
         command += ` ${environmentVariables} `;
         command += `-e GITHUB_WORKSPACE=${CONTAINER_WORKSPACE} `;
+        command += `-e GITHUB_ENV=${CONTAINER_GITHUB_ENV} `;
         command += `--name ${CONTAINER_NAME} `;
         command += ` mcr.microsoft.com/azure-cli:${azcliversion} ${startCommand}`;
         console.log(`${START_SCRIPT_EXECUTION_MARKER}${azcliversion}`);
