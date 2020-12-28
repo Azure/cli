@@ -9,7 +9,7 @@ Read more about various Azure CLI versions [here](https://github.com/Azure/azure
 - `azcliversion` – **Optional** Example: 2.0.72, Default: latest
 - `inlineScript` – **Required** 
 
-Azure CLI GitHub Actions is supported on both 'AzureUSGovernment' or 'AzureChinaCloud'.Login to the respective Azure Cloud before running Azure CLI scripts using [Azure Login](https://github.com/Azure/login)
+Azure CLI GitHub Action is supported for the Azure public cloud as well as Azure government clouds ('AzureUSGovernment' or 'AzureChinaCloud') and Azure Stack ('AzureStack') Hub. Before running this action, login to the respective Azure Cloud  using [Azure Login](https://github.com/Azure/login) by setting appropriate value for the `environment` parameter.
 
 The definition of this GitHub Action is in [action.yml](https://github.com/Azure/CLI/blob/master/action.yml).  The action status is determined by the exit code returned by the script rather than StandardError stream. 
 
