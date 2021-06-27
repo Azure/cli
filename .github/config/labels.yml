@@ -1,0 +1,47 @@
+- name: need-to-triage
+  color: "#fbca04"
+  description: "Requires investigation"
+ 
+- name: idle
+  color: "#9A777A"
+  description: "Inactive for 14 days"
+
+- name: stale
+  color: "#A9A9A9"
+  description: "90 days old"
+ 
+- name: question
+  color: "#d876e3"
+  description: "Requiring some clarification"
+  
+- name: bug
+  color: "#d73a4a"
+  description: "Something is not working"
+ 
+- name: P0
+  color: "#B60205"
+  description: "Action not working"
+
+- name: P1
+  color: "#EE3D1D"
+  description: "Some scenario broken but workaround exists"
+ 
+- name: enhancement
+  color: "#a2eeef"
+  description: "Feature request/improved experience"
+  
+- name: documentation
+  color: "#0075ca"
+  description: "Improvements or additions to documentation"
+ 
+- name: backlog
+  color: "#bd7e4b"
+  description: "Planned for future"
+
+- name: performance-issue
+  color: "#0e8a16"
+  description: "Performance improvement required"
+ 
+- name: waiting-for-customer
+  color: "#0e8a16"
+  description: "Waiting for inputs from customer"
