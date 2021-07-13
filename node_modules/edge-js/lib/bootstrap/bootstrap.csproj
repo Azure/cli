@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp1.1</TargetFrameworks>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <AssemblyName>bootstrap</AssemblyName>
+    <PackageId>bootstrap</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup >
+    <ProjectReference Include="..\..\src\double\Edge.js\Edge.js.csproj" />
+    <ProjectReference Include="..\..\src\double\Edge.js.CSharp\Edge.js.CSharp.csproj" />
+  </ItemGroup>
+
+</Project>
