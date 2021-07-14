@@ -48,7 +48,7 @@ var BASH_ARG = "bash --noprofile --norc -e ";
 var CONTAINER_WORKSPACE = '/github/workspace';
 var CONTAINER_TEMP_DIRECTORY = '/_temp';
 var run = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var scriptFileName, CONTAINER_NAME, inlineScript, azcliversion, credscancheck, actualResult, startCommand, command, error_1, scriptFilePath;
+    var scriptFileName, CONTAINER_NAME, inlineScript, azcliversion, credscancheck, scannedResult, startCommand, command, error_1, scriptFilePath;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -75,16 +75,11 @@ var run = function () { return __awaiter(void 0, void 0, void 0, function () {
                 }
                 console.log("Starting CredScan.");
                 credscancheck = inlineScript;
-                console.log("Original: " + credscancheck);
-                actualResult = { result: "hello world" };
-                return [4 /*yield*/, cs.credscan(inlineScript, actualResult)];
+                scannedResult = { result: null };
+                return [4 /*yield*/, cs.credscan(inlineScript, scannedResult)];
             case 3:
                 credscancheck = _a.sent();
-                console.log('actualResult: ' + JSON.stringify(actualResult));
-                console.log('credscancheck: ' + credscancheck);
-                if (credscancheck != inlineScript) {
-                    core.warning("Some confidential credentials were found in inlineScript");
-                }
+                inlineScript = scannedResult.result;
                 inlineScript = " set -e >&2; echo '" + START_SCRIPT_EXECUTION_MARKER + "' >&2; " + inlineScript;
                 return [4 /*yield*/, utils_1.createScriptFile(inlineScript)];
             case 4:
@@ -178,13 +173,19 @@ var executeDockerCommand = function (dockerCommand, continueOnError) {
                     execOptions = {
                         outStream: new utils_1.NullOutstreamStringWritable({ decodeStrings: false }),
                         listeners: {
-                            stdout: function (data) { return console.log(data.toString()); },
+                            stdout: function (data) {
+                                var scannedResult = { result: null };
+                                var temporaryVariable = cs.credscan(data.toString(), scannedResult);
+                                console.log(scannedResult.result);
+                            },
                             errline: function (data) {
                                 if (!shouldOutputErrorStream) {
                                     errorStream += data + os.EOL;
                                 }
                                 else {
-                                    console.log(data);
+                                    var scannedResult = { result: null };
+                                    var temporaryVariable = cs.credscan(data, scannedResult);
+                                    console.log(scannedResult.result);
                                 }
                                 if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
                                     shouldOutputErrorStream = true;
