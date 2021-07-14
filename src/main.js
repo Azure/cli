@@ -48,7 +48,7 @@ var BASH_ARG = "bash --noprofile --norc -e ";
 var CONTAINER_WORKSPACE = '/github/workspace';
 var CONTAINER_TEMP_DIRECTORY = '/_temp';
 var run = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var scriptFileName, CONTAINER_NAME, inlineScript, azcliversion, temp, startCommand, command, error_1, scriptFilePath;
+    var scriptFileName, CONTAINER_NAME, inlineScript, azcliversion, credscancheck, startCommand, command, error_1, scriptFilePath;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -74,12 +74,11 @@ var run = function () { return __awaiter(void 0, void 0, void 0, function () {
                     return [2 /*return*/];
                 }
                 console.log("Starting CredScan.");
-                temp = cs.credscan(inlineScript);
-                console.log("temp: " + temp);
-                cs.credscan_no_warning(inlineScript);
-                // if(credscancheck.localeCompare(inlineScript)){
-                //     core.warning("Some confidential credentials were found in inlineScript");
-                // }
+                credscancheck = inlineScript;
+                credscancheck = cs.credscan(inlineScript);
+                if (credscancheck != inlineScript) {
+                    core.warning("Some confidential credentials were found in inlineScript");
+                }
                 inlineScript = " set -e >&2; echo '" + START_SCRIPT_EXECUTION_MARKER + "' >&2; " + inlineScript;
                 return [4 /*yield*/, utils_1.createScriptFile(inlineScript)];
             case 3:

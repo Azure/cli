@@ -34,12 +34,12 @@ const run = async () => {
             return;
         }
         console.log(`Starting CredScan.`);
-        let temp: string = cs.credscan(inlineScript);
-        console.log("temp: "+temp);
-        cs.credscan_no_warning(inlineScript);
-        // if(credscancheck.localeCompare(inlineScript)){
-        //     core.warning("Some confidential credentials were found in inlineScript");
-        // }
+        let credscancheck: string = inlineScript;
+        credscancheck = cs.credscan(inlineScript);
+
+        if(credscancheck != inlineScript){
+            core.warning("Some confidential credentials were found in inlineScript");
+        }
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
         let startCommand: string = ` ${BASH_ARG}${CONTAINER_TEMP_DIRECTORY}/${scriptFileName} `;
