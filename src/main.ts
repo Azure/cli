@@ -35,15 +35,9 @@ const run = async () => {
         }
         console.log(`Starting CredScan.`);
         let credscancheck: string = inlineScript;
-        console.log("Original: " + credscancheck)
-        let actualResult = {result: "hello world"}
-        credscancheck = await cs.credscan(inlineScript,actualResult);
-        console.log('actualResult: '+ JSON.stringify(actualResult));
-        console.log('credscancheck: '+credscancheck);
-
-        if(credscancheck != inlineScript){
-            core.warning("Some confidential credentials were found in inlineScript");
-        }
+        let scannedResult = {result: null};
+        credscancheck = await cs.credscan(inlineScript, scannedResult);
+        inlineScript = scannedResult.result;
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
         let startCommand: string = ` ${BASH_ARG}${CONTAINER_TEMP_DIRECTORY}/${scriptFileName} `;
@@ -112,13 +106,19 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
     var execOptions: any = {
         outStream: new NullOutstreamStringWritable({ decodeStrings: false }),
         listeners: {
-            stdout: (data: any) => console.log(data.toString()), //to log the script output while the script is running.
+            stdout: (data: any) => {
+                let scannedResult = {result: null};
+                let temporaryVariable = cs.credscan(data.toString(), scannedResult);
+                console.log(scannedResult.result);
+            }, //to log the script output while the script is running.
             errline: (data: string) => {
                 if (!shouldOutputErrorStream) {
                     errorStream += data + os.EOL;
                 }
                 else {
-                    console.log(data);
+                    let scannedResult = {result: null};
+                    let temporaryVariable = cs.credscan(data, scannedResult);
+                    console.log(scannedResult.result);
                 }
                 if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
                     shouldOutputErrorStream = true;
