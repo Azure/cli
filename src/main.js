@@ -76,6 +76,7 @@ var run = function () { return __awaiter(void 0, void 0, void 0, function () {
                 console.log("Starting CredScan.");
                 credscancheck = inlineScript;
                 credscancheck = cs.credscan(inlineScript);
+                console.log('credscancheck: ' + credscancheck);
                 if (credscancheck != inlineScript) {
                     core.warning("Some confidential credentials were found in inlineScript");
                 }
