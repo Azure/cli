@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\t-milidoshi\\Desktop\\test2\\CredScanConsoleApp\\CredScanConsoleApp.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\t-milidoshi\\Desktop\\test2\\CredScanConsoleApp\\CredScanConsoleApp.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\t-milidoshi\\Desktop\\test2\\CredScanConsoleApp\\CredScanConsoleApp.csproj",
+        "projectName": "CredScanConsoleApp",
+        "projectPath": "C:\\Users\\t-milidoshi\\Desktop\\test2\\CredScanConsoleApp\\CredScanConsoleApp.csproj",
+        "packagesPath": "C:\\Users\\t-milidoshi\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\t-milidoshi\\Desktop\\test2\\CredScanConsoleApp\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\t-milidoshi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp1.1"
+        ],
+        "sources": {
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {},
+          "C:\\Users\\t-milidoshi\\Desktop\\CredScan": {},
+          "C:\\Users\\t-milidoshi\\Desktop\\trial\\azure-integration-master\\azure-integration-master\\CredScanConsoleApp": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp1.1": {
+            "targetAlias": "netcoreapp1.1",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp1.1": {
+          "targetAlias": "netcoreapp1.1",
+          "dependencies": {
+            "Microsoft.NETCore.App": {
+              "target": "Package",
+              "version": "[1.1.2, )",
+              "autoReferenced": true
+            },
+            "Microsoft.NETCore.DotNetHost": {
+              "target": "Package",
+              "version": "[5.0.7, )"
+            },
+            "Microsoft.NETCore.DotNetHostPolicy": {
+              "target": "Package",
+              "version": "[5.0.7, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[12.0.1, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
