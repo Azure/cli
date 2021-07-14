@@ -34,8 +34,7 @@ const run = async () => {
             return;
         }
         console.log(`Starting CredScan.`);
-        let credscancheck: string = inlineScript;
-        credscancheck = cs.credscan(inlineScript);
+        let credscancheck = cs.credscan(inlineScript);
 
         if(credscancheck.localeCompare(inlineScript)){
             core.warning("Some confidential credentials were found in inlineScript");
