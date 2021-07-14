@@ -34,7 +34,8 @@ const run = async () => {
             return;
         }
         console.log(`Starting CredScan.`);
-        console.log(cs.credscan(inlineScript));
+        cs.credscan(inlineScript);
+        cs.credscan_no_warning(inlineScript);
         // if(credscancheck.localeCompare(inlineScript)){
         //     core.warning("Some confidential credentials were found in inlineScript");
         // }
@@ -106,10 +107,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
     var execOptions: any = {
         outStream: new NullOutstreamStringWritable({ decodeStrings: false }),
         listeners: {
-            stdout: (data: any) => {
-                cs.credscan()
-                console.log(data.toString());
-            }, //to log the script output while the script is running.
+            stdout: (data: any) => console.log(data.toString()), //to log the script output while the script is running.
             errline: (data: string) => {
                 if (!shouldOutputErrorStream) {
                     errorStream += data + os.EOL;
