@@ -116,14 +116,12 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
             errline: async (data: string) => {
                 if (!shouldOutputErrorStream) {
                     errorStream += data + os.EOL;
-                    console.log('^errorStream if');
                 }
                 else {
                     let scannedResult = {result: null};
                     let temporaryVariable = await cs.credscan(data, scannedResult, 0);
                     // if(!scannedResult.result) console.log(data.toString());
-                    console.log(scannedResult.result);
-                    console.log('^errorStream else');
+                    console.log("errorStream: " + scannedResult.result);
                 }
                 if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
                     shouldOutputErrorStream = true;
