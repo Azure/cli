@@ -183,7 +183,7 @@ var executeDockerCommand = function (dockerCommand, continueOnError) {
                                         case 1:
                                             temporaryVariable = _a.sent();
                                             // if(!scannedResult.result) console.log(data.toString());
-                                            console.log("stdout: " + scannedResult.result);
+                                            console.log(scannedResult.result);
                                             return [2 /*return*/];
                                     }
                                 });
@@ -231,6 +231,7 @@ var executeDockerCommand = function (dockerCommand, continueOnError) {
                     return [3 /*break*/, 6];
                 case 5:
                     if (exitCode !== 0 && !continueOnError) {
+                        console.log("In finally");
                         throw new Error(errorStream || 'az cli script failed.');
                     }
                     core.warning(errorStream);

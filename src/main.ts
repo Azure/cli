@@ -110,7 +110,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
                 let scannedResult = {result: null};
                 let temporaryVariable = await cs.credscan(data.toString(), scannedResult, 0);
                 // if(!scannedResult.result) console.log(data.toString());
-                console.log("stdout: " + scannedResult.result);
+                console.log(scannedResult.result);
             }, //to log the script output while the script is running.
             errline: async (data: string) => {
                 if (!shouldOutputErrorStream) {
@@ -140,6 +140,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
     }
     finally {
         if (exitCode !== 0 && !continueOnError) {
+            console.log("In finally");
             throw new Error(errorStream || 'az cli script failed.');
         }
         core.warning(errorStream)
