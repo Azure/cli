@@ -1,4 +1,0 @@
-C:\Users\t-milidoshi\Desktop\test2\CredScanConsoleApp\obj\Debug\netcoreapp1.1\CredScanConsoleApp.csproj.AssemblyReference.cache
-C:\Users\t-milidoshi\Desktop\test2\CredScanConsoleApp\obj\Debug\netcoreapp1.1\CredScanConsoleApp.AssemblyInfoInputs.cache
-C:\Users\t-milidoshi\Desktop\test2\CredScanConsoleApp\obj\Debug\netcoreapp1.1\CredScanConsoleApp.AssemblyInfo.cs
-C:\Users\t-milidoshi\Desktop\test2\CredScanConsoleApp\obj\Debug\netcoreapp1.1\CredScanConsoleApp.csproj.CoreCompileInputs.cache
