@@ -173,31 +173,46 @@ var executeDockerCommand = function (dockerCommand, continueOnError) {
                     execOptions = {
                         outStream: new utils_1.NullOutstreamStringWritable({ decodeStrings: false }),
                         listeners: {
-                            stdout: function (data) {
-                                var scannedResult = { result: null };
-                                var temporaryVariable = cs.credscan(data.toString(), scannedResult);
-                                if (!scannedResult.result)
-                                    console.log(data.toString());
-                                else
-                                    console.log(scannedResult.result);
-                            },
-                            errline: function (data) {
-                                if (!shouldOutputErrorStream) {
-                                    errorStream += data + os.EOL;
-                                }
-                                else {
-                                    var scannedResult = { result: null };
-                                    var temporaryVariable = cs.credscan(data, scannedResult);
-                                    if (!scannedResult.result)
-                                        console.log(data.toString());
-                                    else
-                                        console.log(scannedResult.result);
-                                }
-                                if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
-                                    shouldOutputErrorStream = true;
-                                    errorStream = ''; // Flush the container logs. After this, script error logs will be tracked.
-                                }
-                            }
+                            stdout: function (data) { return __awaiter(void 0, void 0, void 0, function () {
+                                var scannedResult, temporaryVariable;
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0:
+                                            scannedResult = { result: null };
+                                            return [4 /*yield*/, cs.credscan(data.toString(), scannedResult)];
+                                        case 1:
+                                            temporaryVariable = _a.sent();
+                                            // if(!scannedResult.result) console.log(data.toString());
+                                            console.log(scannedResult.result);
+                                            return [2 /*return*/];
+                                    }
+                                });
+                            }); },
+                            errline: function (data) { return __awaiter(void 0, void 0, void 0, function () {
+                                var scannedResult, temporaryVariable;
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0:
+                                            if (!!shouldOutputErrorStream) return [3 /*break*/, 1];
+                                            errorStream += data + os.EOL;
+                                            return [3 /*break*/, 3];
+                                        case 1:
+                                            scannedResult = { result: null };
+                                            return [4 /*yield*/, cs.credscan(data, scannedResult)];
+                                        case 2:
+                                            temporaryVariable = _a.sent();
+                                            // if(!scannedResult.result) console.log(data.toString());
+                                            console.log(scannedResult.result);
+                                            _a.label = 3;
+                                        case 3:
+                                            if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
+                                                shouldOutputErrorStream = true;
+                                                errorStream = ''; // Flush the container logs. After this, script error logs will be tracked.
+                                            }
+                                            return [2 /*return*/];
+                                    }
+                                });
+                            }); }
                         }
                     };
                     _a.label = 2;
