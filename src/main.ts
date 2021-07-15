@@ -58,6 +58,7 @@ const run = async () => {
         console.log("az script ran successfully.");
     } catch (error) {
         core.error(error);
+        console.log("In catch(error)");
         core.setFailed(error.stderr);
     }
     finally {
@@ -134,7 +135,6 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         exitCode = await exec.exec(`"${dockerTool}" ${dockerCommand}`, [], execOptions);
     } catch (error) {
         if (!continueOnError) {
-            console.log("continueOnError");
             throw error;
         }
         core.warning(error);
