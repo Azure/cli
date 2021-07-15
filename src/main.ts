@@ -134,13 +134,13 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         exitCode = await exec.exec(`"${dockerTool}" ${dockerCommand}`, [], execOptions);
     } catch (error) {
         if (!continueOnError) {
+            console.log("continueOnError");
             throw error;
         }
         core.warning(error);
     }
     finally {
         if (exitCode !== 0 && !continueOnError) {
-            console.log("In finally");
             throw new Error(errorStream || 'az cli script failed.');
         }
         core.warning(errorStream)
