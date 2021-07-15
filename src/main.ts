@@ -36,7 +36,7 @@ const run = async () => {
         console.log(`Starting CredScan.`);
         let credscancheck: string = inlineScript;
         let scannedResult = {result: null};
-        credscancheck = await cs.credscan(inlineScript, scannedResult, 0);
+        credscancheck = await cs.credscan_no_warning(inlineScript, scannedResult, 1);
         inlineScript = scannedResult.result;
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
@@ -108,7 +108,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         listeners: {
             stdout: async (data: any) => {
                 let scannedResult = {result: null};
-                let temporaryVariable = await cs.credscan(data.toString(), scannedResult, 0);
+                let temporaryVariable = await cs.credscan_no_warning(data.toString(), scannedResult, 1);
                 // if(!scannedResult.result) console.log(data.toString());
                 console.log(scannedResult.result);
             }, //to log the script output while the script is running.
@@ -118,7 +118,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
                 }
                 else {
                     let scannedResult = {result: null};
-                    let temporaryVariable = await cs.credscan(data, scannedResult, 0);
+                    let temporaryVariable = await cs.credscan_no_warning(data, scannedResult, 1);
                     // if(!scannedResult.result) console.log(data.toString());
                     console.log(scannedResult.result);
                 }
