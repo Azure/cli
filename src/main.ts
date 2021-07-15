@@ -35,7 +35,8 @@ const run = async () => {
         }
         console.log(`Starting CredScan.`);
         let credscancheck: string = inlineScript;
-        credscancheck = cs.credscan(inlineScript);
+        console.log("Original: " + credscancheck)
+        credscancheck = await cs.credscan(inlineScript);
         console.log('credscancheck: '+credscancheck);
 
         if(credscancheck != inlineScript){
