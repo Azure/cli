@@ -183,8 +183,7 @@ var executeDockerCommand = function (dockerCommand, continueOnError) {
                                         case 1:
                                             temporaryVariable = _a.sent();
                                             // if(!scannedResult.result) console.log(data.toString());
-                                            console.log(scannedResult.result);
-                                            console.log('^stdout');
+                                            console.log("stdout: " + scannedResult.result);
                                             return [2 /*return*/];
                                     }
                                 });
@@ -203,7 +202,7 @@ var executeDockerCommand = function (dockerCommand, continueOnError) {
                                         case 2:
                                             temporaryVariable = _a.sent();
                                             // if(!scannedResult.result) console.log(data.toString());
-                                            console.log("errorStream: " + scannedResult.result);
+                                            console.log(scannedResult.result);
                                             _a.label = 3;
                                         case 3:
                                             if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
