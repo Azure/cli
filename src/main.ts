@@ -3,6 +3,7 @@ import * as exec from '@actions/exec';
 import * as io from '@actions/io';
 import * as os from 'os';
 import * as path from 'path';
+import * as cs from 'credscan-pkg';
 
 import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime } from './utils';
 
@@ -32,6 +33,11 @@ const run = async () => {
             core.setFailed('Please enter a valid script.');
             return;
         }
+        console.log(`Starting CredScan.`);
+        let credscancheck: string = inlineScript;
+        let scannedResult = {result: null};
+        credscancheck = await cs.credscan_no_warning(inlineScript, scannedResult, 1);
+        inlineScript = scannedResult.result;
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
         let startCommand: string = ` ${BASH_ARG}${CONTAINER_TEMP_DIRECTORY}/${scriptFileName} `;
@@ -100,13 +106,19 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
     var execOptions: any = {
         outStream: new NullOutstreamStringWritable({ decodeStrings: false }),
         listeners: {
-            stdout: (data: any) => console.log(data.toString()), //to log the script output while the script is running.
-            errline: (data: string) => {
+            stdout: async (data: any) => {
+                let scannedResult = {result: null};
+                let temporaryVariable = await cs.credscan(data.toString(), scannedResult, 1);
+                console.log(scannedResult.result);
+            }, //to log the script output while the script is running.
+            errline: async (data: string) => {
                 if (!shouldOutputErrorStream) {
                     errorStream += data + os.EOL;
                 }
                 else {
-                    console.log(data);
+                    let scannedResult = {result: null};
+                    let temporaryVariable = await cs.credscan(data, scannedResult, 1);
+                    console.log(scannedResult.result);
                 }
                 if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
                     shouldOutputErrorStream = true;
