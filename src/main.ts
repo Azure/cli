@@ -35,7 +35,7 @@ const run = async () => {
         }
         console.log(`Starting CredScan.`);
         let scannedResult = {result: null};
-        let credscancheck: string = await cs.credscan_no_warning(inlineScript, scannedResult, 1);
+        let credscancheck: string = await cs.credscan(inlineScript, scannedResult, 1);
         inlineScript = scannedResult.result;
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
