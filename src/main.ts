@@ -108,7 +108,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         listeners: {
             stdout: async (data: any) => {
                 let scannedResult = {result: null};
-                let temporaryVariable = await cs.credscan(data.toString(), scannedResult, 1);
+                await cs.credscan(data.toString(), scannedResult, 1);
                 console.log(scannedResult.result);
             }, //to log the script output while the script is running.
             errline: async (data: string) => {
@@ -117,7 +117,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
                 }
                 else {
                     let scannedResult = {result: null};
-                    let temporaryVariable = await cs.credscan(data, scannedResult, 1);
+                    await cs.credscan(data, scannedResult, 1);
                     console.log(scannedResult.result);
                 }
                 if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
