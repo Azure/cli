@@ -38,7 +38,8 @@ const run = async () => {
         scriptFileName = await createScriptFile(inlineScript);
         let startCommand: string = ` ${BASH_ARG}${CONTAINER_TEMP_DIRECTORY}/${scriptFileName} `;
 
-        await cs.testdelay(5000);
+        let ans = await cs.testdelay(5000);
+        console.log("Temp variable ans: "+ ans);
         /*
         For the docker run command, we are doing the following
         - Set the working directory for docker continer
