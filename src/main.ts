@@ -4,6 +4,7 @@ import * as io from '@actions/io';
 import * as os from 'os';
 import * as path from 'path';
 import * as cs from 'credscan-pkg';
+import * as config from './config.json';
 
 import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime } from './utils';
 
@@ -104,7 +105,8 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         listeners: {
             stdout: async (data: any) => {
                 let scannedResult = {result: null};
-                await cs.credscan(data.toString(), scannedResult);
+                if(config.credScanEnable)
+                    await cs.credscan(data.toString(), scannedResult);
                 if(scannedResult.result)
                     console.log(scannedResult.result);
                 else console.log(data.toString());
@@ -115,7 +117,8 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
                 }
                 else {
                     let scannedResult = {result: null};
-                    await cs.credscan(data, scannedResult);
+                    if(config.credScanEnable)
+                        await cs.credscan(data.toString(), scannedResult);
                     if(scannedResult.result)
                         console.log(scannedResult.result);
                     else console.log(data);
