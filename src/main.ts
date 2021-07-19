@@ -104,7 +104,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         listeners: {
             stdout: async (data: any) => {
                 let scannedResult = {result: null};
-                await cs.credscan(data.toString(), scannedResult, 1);
+                await cs.credscan(data.toString(), scannedResult);
                 if(scannedResult.result)
                     console.log(scannedResult.result);
                 else console.log(data.toString());
@@ -115,7 +115,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
                 }
                 else {
                     let scannedResult = {result: null};
-                    await cs.credscan(data, scannedResult, 1);
+                    await cs.credscan(data, scannedResult);
                     if(scannedResult.result)
                         console.log(scannedResult.result);
                     else console.log(data);
