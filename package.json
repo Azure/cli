@@ -20,7 +20,9 @@
   "dependencies": {
     "@actions/core": "^1.1.3",
     "@actions/exec": "^1.0.1",
-    "@actions/io": "^1.0.1"
+    "@actions/io": "^1.0.1",
+    "credscan-pkg": "file:credscan-pkg-1.0.0.tgz",
+    "edge-js": "^15.5.2"
   },
   "bugs": {
     "url": "https://github.com/Azure/CLI/issues"
