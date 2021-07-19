@@ -29,6 +29,7 @@ else
 fi
 
 npm install
+dotnet build node_modules/credscan-pkg/src/CredScanSrc.sln
 
 
 
