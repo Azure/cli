@@ -33,14 +33,12 @@ const run = async () => {
             core.setFailed('Please enter a valid script.');
             return;
         }
-        console.log(`Starting CredScan.`);
-        let scannedResult = {result: null};
-        let credscancheck: string = await cs.credscan(inlineScript, scannedResult, 1);
-        inlineScript = scannedResult.result;
+        
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
         let startCommand: string = ` ${BASH_ARG}${CONTAINER_TEMP_DIRECTORY}/${scriptFileName} `;
 
+        await cs.testdelay(5000);
         /*
         For the docker run command, we are doing the following
         - Set the working directory for docker continer
