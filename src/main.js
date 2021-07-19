@@ -48,7 +48,7 @@ var BASH_ARG = "bash --noprofile --norc -e ";
 var CONTAINER_WORKSPACE = '/github/workspace';
 var CONTAINER_TEMP_DIRECTORY = '/_temp';
 var run = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var scriptFileName, CONTAINER_NAME, inlineScript, azcliversion, startCommand, command, error_1, scriptFilePath;
+    var scriptFileName, CONTAINER_NAME, inlineScript, azcliversion, startCommand, ans, command, error_1, scriptFilePath;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -80,7 +80,8 @@ var run = function () { return __awaiter(void 0, void 0, void 0, function () {
                 startCommand = " " + BASH_ARG + CONTAINER_TEMP_DIRECTORY + "/" + scriptFileName + " ";
                 return [4 /*yield*/, cs.testdelay(5000)];
             case 4:
-                _a.sent();
+                ans = _a.sent();
+                console.log("Temp variable ans: " + ans);
                 command = "run --workdir " + CONTAINER_WORKSPACE + " -v " + process.env.GITHUB_WORKSPACE + ":" + CONTAINER_WORKSPACE + " ";
                 command += " -v " + process.env.HOME + "/.azure:/root/.azure -v " + utils_1.TEMP_DIRECTORY + ":" + CONTAINER_TEMP_DIRECTORY + " ";
                 command += "-e GITHUB_WORKSPACE=" + CONTAINER_WORKSPACE + " --name " + CONTAINER_NAME;
