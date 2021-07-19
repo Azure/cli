@@ -181,7 +181,10 @@ var executeDockerCommand = function (dockerCommand, continueOnError) {
                                             return [4 /*yield*/, cs.credscan(data.toString(), scannedResult, 1)];
                                         case 1:
                                             _a.sent();
-                                            console.log(scannedResult.result);
+                                            if (scannedResult.result)
+                                                console.log(scannedResult.result);
+                                            else
+                                                console.log(data.toString());
                                             return [2 /*return*/];
                                     }
                                 });
@@ -199,7 +202,10 @@ var executeDockerCommand = function (dockerCommand, continueOnError) {
                                             return [4 /*yield*/, cs.credscan(data, scannedResult, 1)];
                                         case 2:
                                             _a.sent();
-                                            console.log(scannedResult.result);
+                                            if (scannedResult.result)
+                                                console.log(scannedResult.result);
+                                            else
+                                                console.log(data);
                                             _a.label = 3;
                                         case 3:
                                             if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
