@@ -105,8 +105,13 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         listeners: {
             stdout: async (data: any) => {
                 let scannedResult = {result: null};
-                if(config.credScanEnable)
+                if(config.credScanEnable){
                     await cs.credscan(data.toString(), scannedResult);
+                    console.log("CredScan was enabled");
+                }
+                else{
+                    console.log("CredScan was disabled");
+                }
                 if(scannedResult.result)
                     console.log(scannedResult.result);
                 else console.log(data.toString());
@@ -117,8 +122,13 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
                 }
                 else {
                     let scannedResult = {result: null};
-                    if(config.credScanEnable)
-                        await cs.credscan(data.toString(), scannedResult);
+                    if(config.credScanEnable){
+                        await cs.credscan(data, scannedResult);
+                        console.log("CredScan was enabled");
+                    }
+                    else{
+                        console.log("CredScan was disabled");
+                    }
                     if(scannedResult.result)
                         console.log(scannedResult.result);
                     else console.log(data);
