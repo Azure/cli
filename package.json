@@ -18,8 +18,7 @@
         "typescript": "^3.6.3"
     },
     "optionalDependencies": {
-        "credscan-pkg": "file:credscan-pkg-1.0.0.tgz",
-        "edge-js": "^15.5.2"
+        "credscan-pkg": "file:credscan-pkg-1.0.0.tgz"
     },
     "dependencies": {
         "@actions/core": "^1.1.3",

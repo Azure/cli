@@ -105,13 +105,17 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         listeners: {
             stdout: async (data: any) => {
                 let scannedResult = {result: null};
-                if(!config.credScanEnable) console.log(data.toString());
-                else if(!process.env.CREDSCAN) console.log(data.toString());
+                if(!config.credScanEnable || !process.env.CREDSCAN){
+                    console.log(data.toString());
+                }
                 else if(config.credScanEnable || process.env.CREDSCAN){
                     await cs.credscan(data.toString(), scannedResult);
-                    if(scannedResult.result)
-                    console.log(scannedResult.result);
-                    else console.log(data.toString());
+                    if(scannedResult.result){
+                        console.log(scannedResult.result);
+                    }
+                    else {
+                        console.log(data.toString());
+                    }
                 }
                 else console.log(data.toString());
             }, //to log the script output while the script is running.
@@ -121,15 +125,21 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
                 }
                 else {
                     let scannedResult = {result: null};
-                    if(!config.credScanEnable) console.log(data);
-                    else if(!process.env.CREDSCAN) console.log(data);
+                    if(!config.credScanEnable || !process.env.CREDSCAN){
+                        console.log(data);
+                    }
                     else if(config.credScanEnable || process.env.CREDSCAN){
                         await cs.credscan(data, scannedResult);
-                        if(scannedResult.result)
+                        if(scannedResult.result){
                             console.log(scannedResult.result);
-                        else console.log(data);
+                        }
+                        else{
+                            console.log(data);
+                        }
                     }
-                    else console.log(data);
+                    else{
+                        console.log(data);
+                    }
                 }
                 if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
                     shouldOutputErrorStream = true;
