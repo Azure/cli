@@ -106,6 +106,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
             stdout: async (data: any) => {
                 let scannedResult = {result: null};
                 if(!config.credScanEnable) console.log(data.toString());
+                else if(!process.env.CREDSCAN) console.log(data.toString());
                 else if(config.credScanEnable || process.env.CREDSCAN){
                     await cs.credscan(data.toString(), scannedResult);
                     if(scannedResult.result)
@@ -121,6 +122,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
                 else {
                     let scannedResult = {result: null};
                     if(!config.credScanEnable) console.log(data);
+                    else if(!process.env.CREDSCAN) console.log(data);
                     else if(config.credScanEnable || process.env.CREDSCAN){
                         await cs.credscan(data, scannedResult);
                         if(scannedResult.result)
