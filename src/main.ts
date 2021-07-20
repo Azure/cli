@@ -95,12 +95,15 @@ const getAllAzCliVersions = async (): Promise<Array<string>> => {
     return [];
 }
 
-const printWithCredScan = async(data: string) => {
+const printWithCredScan = async (data: string) => {
     let scannedResult = { result: null };
-    if (!config.credScanEnable || !process.env.CREDSCAN) {
+    if (!config.credScanEnable) {
         console.log(data);
     }
-    else if (config.credScanEnable || process.env.CREDSCAN) {
+    else if (!process.env.CREDSCAN) {
+        console.log(data);
+    }
+    else {
         await cs.credscan(data, scannedResult);
         if (scannedResult.result) {
             console.log(scannedResult.result);
@@ -108,9 +111,6 @@ const printWithCredScan = async(data: string) => {
         else {
             console.log(data);
         }
-    }
-    else {
-        console.log(data);
     }
 }
 
