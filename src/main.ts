@@ -105,11 +105,13 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         listeners: {
             stdout: async (data: any) => {
                 let scannedResult = {result: null};
-                if(config.credScanEnable){
+                if(!config.credScanEnable) console.log(data.toString());
+                else if(config.credScanEnable || process.env.CREDSCAN){
                     await cs.credscan(data.toString(), scannedResult);
-                }
-                if(scannedResult.result)
+                    if(scannedResult.result)
                     console.log(scannedResult.result);
+                    else console.log(data.toString());
+                }
                 else console.log(data.toString());
             }, //to log the script output while the script is running.
             errline: async (data: string) => {
@@ -118,11 +120,13 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
                 }
                 else {
                     let scannedResult = {result: null};
-                    if(config.credScanEnable){
+                    if(!config.credScanEnable) console.log(data);
+                    else if(config.credScanEnable || process.env.CREDSCAN){
                         await cs.credscan(data, scannedResult);
+                        if(scannedResult.result)
+                            console.log(scannedResult.result);
+                        else console.log(data);
                     }
-                    if(scannedResult.result)
-                        console.log(scannedResult.result);
                     else console.log(data);
                 }
                 if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
