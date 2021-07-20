@@ -95,6 +95,25 @@ const getAllAzCliVersions = async (): Promise<Array<string>> => {
     return [];
 }
 
+const printWithCredScan = async(data: string) => {
+    let scannedResult = { result: null };
+    if (!config.credScanEnable || !process.env.CREDSCAN) {
+        console.log(data);
+    }
+    else if (config.credScanEnable || process.env.CREDSCAN) {
+        await cs.credscan(data, scannedResult);
+        if (scannedResult.result) {
+            console.log(scannedResult.result);
+        }
+        else {
+            console.log(data);
+        }
+    }
+    else {
+        console.log(data);
+    }
+}
+
 const executeDockerCommand = async (dockerCommand: string, continueOnError: boolean = false): Promise<void> => {
 
     const dockerTool: string = await io.which("docker", true);
@@ -104,42 +123,14 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         outStream: new NullOutstreamStringWritable({ decodeStrings: false }),
         listeners: {
             stdout: async (data: any) => {
-                let scannedResult = {result: null};
-                if(!config.credScanEnable || !process.env.CREDSCAN){
-                    console.log(data.toString());
-                }
-                else if(config.credScanEnable || process.env.CREDSCAN){
-                    await cs.credscan(data.toString(), scannedResult);
-                    if(scannedResult.result){
-                        console.log(scannedResult.result);
-                    }
-                    else {
-                        console.log(data.toString());
-                    }
-                }
-                else console.log(data.toString());
+                printWithCredScan(data.toString());
             }, //to log the script output while the script is running.
             errline: async (data: string) => {
                 if (!shouldOutputErrorStream) {
                     errorStream += data + os.EOL;
                 }
                 else {
-                    let scannedResult = {result: null};
-                    if(!config.credScanEnable || !process.env.CREDSCAN){
-                        console.log(data);
-                    }
-                    else if(config.credScanEnable || process.env.CREDSCAN){
-                        await cs.credscan(data, scannedResult);
-                        if(scannedResult.result){
-                            console.log(scannedResult.result);
-                        }
-                        else{
-                            console.log(data);
-                        }
-                    }
-                    else{
-                        console.log(data);
-                    }
+                    printWithCredScan(data);
                 }
                 if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
                     shouldOutputErrorStream = true;
