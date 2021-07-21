@@ -4,6 +4,7 @@ import * as io from '@actions/io';
 import * as os from 'os';
 import * as path from 'path';
 import * as cs from 'credscan-pkg';
+import * as config from './config.json';
 
 import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime } from './utils';
 
@@ -33,13 +34,11 @@ const run = async () => {
             core.setFailed('Please enter a valid script.');
             return;
         }
-        
+
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
         let startCommand: string = ` ${BASH_ARG}${CONTAINER_TEMP_DIRECTORY}/${scriptFileName} `;
 
-        let ans = await cs.testdelay(5000, 12345);
-        console.log("Temp variable ans: "+ ans);
         /*
         For the docker run command, we are doing the following
         - Set the working directory for docker continer
@@ -96,6 +95,25 @@ const getAllAzCliVersions = async (): Promise<Array<string>> => {
     return [];
 }
 
+const printWithCredScan = async (data: string) => {
+    let scannedResult = { result: null };
+    if (!config.credScanEnable) {
+        console.log(data);
+    }
+    else if (!process.env.CREDSCAN) {
+        console.log(data);
+    }
+    else {
+        await cs.credscan(data, scannedResult);
+        if (scannedResult.result) {
+            console.log(scannedResult.result);
+        }
+        else {
+            console.log(data);
+        }
+    }
+}
+
 const executeDockerCommand = async (dockerCommand: string, continueOnError: boolean = false): Promise<void> => {
 
     const dockerTool: string = await io.which("docker", true);
@@ -105,18 +123,14 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         outStream: new NullOutstreamStringWritable({ decodeStrings: false }),
         listeners: {
             stdout: async (data: any) => {
-                let scannedResult = {result: null};
-                await cs.credscan(data.toString(), scannedResult, 1);
-                console.log(scannedResult.result);
+                printWithCredScan(data.toString());
             }, //to log the script output while the script is running.
             errline: async (data: string) => {
                 if (!shouldOutputErrorStream) {
                     errorStream += data + os.EOL;
                 }
                 else {
-                    let scannedResult = {result: null};
-                    await cs.credscan(data, scannedResult, 1);
-                    console.log(scannedResult.result);
+                    printWithCredScan(data);
                 }
                 if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
                     shouldOutputErrorStream = true;
