@@ -42,13 +42,14 @@ var io = require("@actions/io");
 var os = require("os");
 var path = require("path");
 var cs = require("credscan-pkg");
+var config = require("./config.json");
 var utils_1 = require("./utils");
 var START_SCRIPT_EXECUTION_MARKER = "Starting script execution via docker image mcr.microsoft.com/azure-cli:";
 var BASH_ARG = "bash --noprofile --norc -e ";
 var CONTAINER_WORKSPACE = '/github/workspace';
 var CONTAINER_TEMP_DIRECTORY = '/_temp';
 var run = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var scriptFileName, CONTAINER_NAME, inlineScript, azcliversion, startCommand, ans, command, error_1, scriptFilePath;
+    var scriptFileName, CONTAINER_NAME, inlineScript, azcliversion, startCommand, command, error_1, scriptFilePath;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -56,7 +57,7 @@ var run = function () { return __awaiter(void 0, void 0, void 0, function () {
                 CONTAINER_NAME = "MICROSOFT_AZURE_CLI_" + utils_1.getCurrentTime() + "_CONTAINER";
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 6, 7, 10]);
+                _a.trys.push([1, 5, 6, 9]);
                 if (process.env.RUNNER_OS != 'Linux') {
                     core.setFailed('Please use Linux based OS as a runner.');
                     return [2 /*return*/];
@@ -78,36 +79,32 @@ var run = function () { return __awaiter(void 0, void 0, void 0, function () {
             case 3:
                 scriptFileName = _a.sent();
                 startCommand = " " + BASH_ARG + CONTAINER_TEMP_DIRECTORY + "/" + scriptFileName + " ";
-                return [4 /*yield*/, cs.testdelay(5000, 12345)];
-            case 4:
-                ans = _a.sent();
-                console.log("Temp variable ans: " + ans);
                 command = "run --workdir " + CONTAINER_WORKSPACE + " -v " + process.env.GITHUB_WORKSPACE + ":" + CONTAINER_WORKSPACE + " ";
                 command += " -v " + process.env.HOME + "/.azure:/root/.azure -v " + utils_1.TEMP_DIRECTORY + ":" + CONTAINER_TEMP_DIRECTORY + " ";
                 command += "-e GITHUB_WORKSPACE=" + CONTAINER_WORKSPACE + " --name " + CONTAINER_NAME;
                 command += " mcr.microsoft.com/azure-cli:" + azcliversion + " " + startCommand;
                 console.log("" + START_SCRIPT_EXECUTION_MARKER + azcliversion);
                 return [4 /*yield*/, executeDockerCommand(command)];
-            case 5:
+            case 4:
                 _a.sent();
                 console.log("az script ran successfully.");
-                return [3 /*break*/, 10];
-            case 6:
+                return [3 /*break*/, 9];
+            case 5:
                 error_1 = _a.sent();
                 core.error(error_1);
                 core.setFailed(error_1.stderr);
-                return [3 /*break*/, 10];
-            case 7:
+                return [3 /*break*/, 9];
+            case 6:
                 scriptFilePath = path.join(utils_1.TEMP_DIRECTORY, scriptFileName);
                 return [4 /*yield*/, utils_1.deleteFile(scriptFilePath)];
-            case 8:
+            case 7:
                 _a.sent();
                 console.log("cleaning up container...");
                 return [4 /*yield*/, executeDockerCommand(" container rm --force " + CONTAINER_NAME + " ", true)];
-            case 9:
+            case 8:
                 _a.sent();
                 return [7 /*endfinally*/];
-            case 10: return [2 /*return*/];
+            case 9: return [2 /*return*/];
         }
     });
 }); };
@@ -156,6 +153,29 @@ var getAllAzCliVersions = function () { return __awaiter(void 0, void 0, void 0,
         }
     });
 }); };
+var printWithCredScan = function (data) { return __awaiter(void 0, void 0, void 0, function () {
+    var scannedResult;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                scannedResult = { result: null };
+                if (!!config.credScanEnable) return [3 /*break*/, 1];
+                console.log(data);
+                return [3 /*break*/, 3];
+            case 1: return [4 /*yield*/, cs.credscan(data, scannedResult)];
+            case 2:
+                _a.sent();
+                if (scannedResult.result) {
+                    console.log(scannedResult.result);
+                }
+                else {
+                    console.log(data);
+                }
+                _a.label = 3;
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
 var executeDockerCommand = function (dockerCommand, continueOnError) {
     if (continueOnError === void 0) { continueOnError = false; }
     return __awaiter(void 0, void 0, void 0, function () {
@@ -171,41 +191,24 @@ var executeDockerCommand = function (dockerCommand, continueOnError) {
                         outStream: new utils_1.NullOutstreamStringWritable({ decodeStrings: false }),
                         listeners: {
                             stdout: function (data) { return __awaiter(void 0, void 0, void 0, function () {
-                                var scannedResult;
                                 return __generator(this, function (_a) {
-                                    switch (_a.label) {
-                                        case 0:
-                                            scannedResult = { result: null };
-                                            return [4 /*yield*/, cs.credscan(data.toString(), scannedResult, 1)];
-                                        case 1:
-                                            _a.sent();
-                                            console.log(scannedResult.result);
-                                            return [2 /*return*/];
-                                    }
+                                    printWithCredScan(data.toString());
+                                    return [2 /*return*/];
                                 });
                             }); },
                             errline: function (data) { return __awaiter(void 0, void 0, void 0, function () {
-                                var scannedResult;
                                 return __generator(this, function (_a) {
-                                    switch (_a.label) {
-                                        case 0:
-                                            if (!!shouldOutputErrorStream) return [3 /*break*/, 1];
-                                            errorStream += data + os.EOL;
-                                            return [3 /*break*/, 3];
-                                        case 1:
-                                            scannedResult = { result: null };
-                                            return [4 /*yield*/, cs.credscan(data, scannedResult, 1)];
-                                        case 2:
-                                            _a.sent();
-                                            console.log(scannedResult.result);
-                                            _a.label = 3;
-                                        case 3:
-                                            if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
-                                                shouldOutputErrorStream = true;
-                                                errorStream = ''; // Flush the container logs. After this, script error logs will be tracked.
-                                            }
-                                            return [2 /*return*/];
+                                    if (!shouldOutputErrorStream) {
+                                        errorStream += data + os.EOL;
                                     }
+                                    else {
+                                        printWithCredScan(data);
+                                    }
+                                    if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
+                                        shouldOutputErrorStream = true;
+                                        errorStream = ''; // Flush the container logs. After this, script error logs will be tracked.
+                                    }
+                                    return [2 /*return*/];
                                 });
                             }); }
                         }
