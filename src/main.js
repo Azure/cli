@@ -162,7 +162,7 @@ var printWithCredScan = function (data) { return __awaiter(void 0, void 0, void 
                 if (!!config.credScanEnable) return [3 /*break*/, 1];
                 console.log(data);
                 return [3 /*break*/, 3];
-            case 1: return [4 /*yield*/, cs.credscan(data, scannedResult)];
+            case 1: return [4 /*yield*/, cs.credscan(data, scannedResult, 1)];
             case 2:
                 _a.sent();
                 if (scannedResult.result) {
