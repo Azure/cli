@@ -100,9 +100,6 @@ const printWithCredScan = async (data: string) => {
     if (!config.credScanEnable) {
         console.log(data);
     }
-    else if (!process.env.CREDSCAN) {
-        console.log(data);
-    }
     else {
         await cs.credscan(data, scannedResult);
         if (scannedResult.result) {
