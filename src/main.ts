@@ -104,7 +104,7 @@ const printWithCredScan = async (data: string) => {
         console.log(data);
     }
     else {
-        await cs.credscan(data, scannedResult, 1);
+        await cs.credscan(data, scannedResult, 0);
         if (scannedResult.result) {
             console.log(scannedResult.result);
         }
