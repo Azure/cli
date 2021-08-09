@@ -2,7 +2,6 @@ name: ci-workflow
 on:
   workflow_dispatch:
   push:
-  
 jobs:
   test_action_job:
     runs-on: ubuntu-latest
