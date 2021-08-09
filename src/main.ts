@@ -22,19 +22,16 @@ export const run = async () => {
         }
 
         let inlineScript: string = core.getInput('inlineScript', { required: true });
-        let azcliversion: string = core.getInput('azcliversion', { required: true });
+        let azcliversion: string = core.getInput('azcliversion', { required: true }).trim().toLowerCase();
        
         if (!(await checkIfValidCLIVersion(azcliversion))) {
-            console.log("INVALID VERSION")
             core.setFailed('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.');
             throw new Error('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.')
-            return;
         }
 
         if (!inlineScript.trim()) {
             core.setFailed('Please enter a valid script.');
             throw new Error('Please enter a valid script.')
-            return;
         }
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
