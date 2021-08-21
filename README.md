@@ -133,6 +133,10 @@ runs:
   main: 'lib/main.js'
 ```
 
+# Getting Help for Azure CLI Issues
+
+If you encounter an issue related to the Azure CLI commands executed in your script, you can file an issue directly on the [Azure CLI repository](https://github.com/Azure/azure-cli/issues/new/choose).
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
