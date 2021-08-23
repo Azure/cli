@@ -11,7 +11,8 @@ const BASH_ARG: string = `bash --noprofile --norc -e `;
 const CONTAINER_WORKSPACE: string = '/github/workspace';
 const CONTAINER_TEMP_DIRECTORY: string = '/_temp';
 
-const run = async () => {
+
+export const run = async () => {
     var scriptFileName: string = '';
     const CONTAINER_NAME = `MICROSOFT_AZURE_CLI_${getCurrentTime()}_CONTAINER`;
     try {
@@ -22,15 +23,15 @@ const run = async () => {
 
         let inlineScript: string = core.getInput('inlineScript', { required: true });
         let azcliversion: string = core.getInput('azcliversion', { required: true }).trim().toLowerCase();
-
+       
         if (!(await checkIfValidCLIVersion(azcliversion))) {
             core.setFailed('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.');
-            return;
+            throw new Error('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.')
         }
 
         if (!inlineScript.trim()) {
             core.setFailed('Please enter a valid script.');
-            return;
+            throw new Error('Please enter a valid script.')
         }
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
@@ -66,6 +67,7 @@ const run = async () => {
     } catch (error) {
         core.error(error);
         core.setFailed(error.stderr);
+        throw error;
     }
     finally {
         // clean up
