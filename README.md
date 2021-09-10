@@ -13,10 +13,15 @@ Azure CLI GitHub Action is supported for the Azure public cloud as well as Azure
 
 The definition of this GitHub Action is in [action.yml](https://github.com/Azure/CLI/blob/master/action.yml).  The action status is determined by the exit code returned by the script rather than StandardError stream. 
 
+## Note
+Please note that the action executes Az CLI script in a docker container. This means that the action is subjected to potential restrictions which arise from containerized execution. For example: 
+  1. If script sets up an environment variable, it will not take effect in host and hence subsequent actions shouldn't rely on such environment variable.
+  2. There is some restriction on how cross action file read/write is done. GITHUB_WORKSPACE directory in host is mapped to working directory inside container. So, if the action wants to create a file, which will be read by subsequent actions, it should do so within current working directory tree.
+
 ## Sample workflow 
 
 ### Dependencies on other GitHub Actions
-* [Azure Login](https://github.com/Azure/login) – **Required** Login with your Azure credentials 
+* [Azure Login](https://github.com/Azure/login) – **Optional**  Login with your Azure credentials, required only for authentication via azure credentials. Authentication via connection strings or keys do not require this step.
 * [Checkout](https://github.com/actions/checkout) – **Optional** To execute the scripts present in your repository
 ### Workflow to execute an AZ CLI script of a specific CLI version
 ```
@@ -105,12 +110,6 @@ Follow the steps to configure the secret:
   
 ```
   * Now in the workflow file in your branch: `.github/workflows/workflow.yml` replace the secret in Azure login action with your secret (Refer to the example above)
-
-
-## Note
-Please note that the action executes Az CLI script in a docker container. This means that the action is subjected to potential restrictions which arise from containerized execution. For example: 
-  1. If script sets up an environment variable, it will not take effect in host and hence subsequent actions shouldn't rely on such environment variable.
-  2. There is some restriction on how cross action file read/write is done. GITHUB_WORKSPACE directory in host is mapped to working directory inside container. So, if the action wants to create a file, which will be read by subsequent actions, it should do so within current working directory tree.
 
 ## Azure CLI Action metadata file
 
