@@ -8,7 +8,7 @@ Read more about various Azure CLI versions [here](https://github.com/Azure/azure
 
 - `azcliversion` – **Optional** Example: 2.0.72, Default: latest
 - `inlineScript` – **Required** 
-- `restrictLatestToAgent` – **Optional** If set to true, latest will be restricted to az cli version available on the agent. This can be used as a safeguard againt any mismatch between az cli version on the agent and latest. Valid values are true and false. Default value set to false
+- `restrictLatestToAgent` – **Optional** If set to true, latest will be restricted to az cli version available on the agent. This can be used as a safeguard against any mismatch between az cli version on the agent and latest. Valid values are true and false. Default value set to false
 
 Azure CLI GitHub Action is supported for the Azure public cloud as well as Azure government clouds ('AzureUSGovernment' or 'AzureChinaCloud') and Azure Stack ('AzureStack') Hub. Before running this action, login to the respective Azure Cloud  using [Azure Login](https://github.com/Azure/login) by setting appropriate value for the `environment` parameter.
 
