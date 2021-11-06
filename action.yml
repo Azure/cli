@@ -9,6 +9,10 @@ inputs:
     description: 'Azure CLI version to be used to execute the script. If not provided, latest version is used'
     required: false
     default: 'latest'
+  restrictLatestToAgent:
+    description: 'If set to true, latest will be restricted to maximum version available on the agent. Valid values are true and false'
+    required: false
+    default: false
 branding:
   icon: 'login.svg'
   color: 'blue'

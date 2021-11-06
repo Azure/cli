@@ -3,6 +3,8 @@ import * as exec from '@actions/exec';
 import * as io from '@actions/io';
 import * as os from 'os';
 import * as path from 'path';
+const util = require('util');
+const cpExec = util.promisify(require('child_process').exec);
 
 import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime, checkIfEnvironmentVariableIsOmitted } from './utils';
 
@@ -23,7 +25,31 @@ export const run = async () => {
 
         let inlineScript: string = core.getInput('inlineScript', { required: true });
         let azcliversion: string = core.getInput('azcliversion', { required: true }).trim().toLowerCase();
-       
+        let restrictLatestToAgentString: string = core.getInput('restrictLatestToAgent', { required: true });
+
+        // Temporary code, will update actions/core in future to get access to getBooleanInput
+        let restrictLatestToAgent = false
+        if (restrictLatestToAgentString == "true") {
+            restrictLatestToAgent = true
+        }
+        // Ends here
+
+        let agentAzCliVersion = azcliversion
+        if (restrictLatestToAgent && azcliversion == "latest") {
+            const { stdout, stderr } = await cpExec('az version');
+            if (!stderr) {
+                try {
+                    agentAzCliVersion = JSON.parse(stdout)["azure-cli"]
+                }
+                catch (er) {
+                    console.log('Failed to fetch az cli version from agent. Reverting back to azcliversion input.')
+                }
+            } else {
+                console.log('Failed to fetch az cli version from agent. Reverting back to azcliversion input.')
+            }
+            azcliversion = agentAzCliVersion
+        }
+
         if (!(await checkIfValidCLIVersion(azcliversion))) {
             core.setFailed('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.');
             throw new Error('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.')
