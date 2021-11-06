@@ -25,7 +25,7 @@ export const run = async () => {
 
         let inlineScript: string = core.getInput('inlineScript', { required: true });
         let azcliversion: string = core.getInput('azcliversion', { required: true }).trim().toLowerCase();
-        let restrictLatestToAgentString: string = core.getInput('restrictLatestToAgent', { required: true });
+        let restrictLatestToAgentString: string = core.getInput('restrictLatestToAgent', { required: false });
 
         // Temporary code, will update actions/core in future to get access to getBooleanInput
         let restrictLatestToAgent = false
