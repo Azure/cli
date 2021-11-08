@@ -12,7 +12,7 @@ const START_SCRIPT_EXECUTION_MARKER: string = `Starting script execution via doc
 const BASH_ARG: string = `bash --noprofile --norc -e `;
 const CONTAINER_WORKSPACE: string = '/github/workspace';
 const CONTAINER_TEMP_DIRECTORY: string = '/_temp';
-
+const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion'
 
 export const run = async () => {
     var scriptFileName: string = '';
@@ -25,29 +25,21 @@ export const run = async () => {
 
         let inlineScript: string = core.getInput('inlineScript', { required: true });
         let azcliversion: string = core.getInput('azcliversion', { required: true }).trim().toLowerCase();
-        let restrictLatestToAgentString: string = core.getInput('restrictLatestToAgent', { required: false });
 
-        // Temporary code, will update actions/core in future to get access to getBooleanInput
-        let restrictLatestToAgent = false
-        if (restrictLatestToAgentString == "true") {
-            restrictLatestToAgent = true
-        }
-        // Ends here
-
-        let agentAzCliVersion = azcliversion
-        if (restrictLatestToAgent && azcliversion == "latest") {
+        if(azcliversion == AZ_CLI_VERSION_DEFAULT_VALUE){
             const { stdout, stderr } = await cpExec('az version');
             if (!stderr) {
                 try {
-                    agentAzCliVersion = JSON.parse(stdout)["azure-cli"]
+                    azcliversion = JSON.parse(stdout)["azure-cli"]
                 }
                 catch (er) {
-                    console.log('Failed to fetch az cli version from agent. Reverting back to azcliversion input.')
+                    console.log('Failed to fetch az cli version from agent. Reverting back to latest.')
+                    azcliversion = 'latest'
                 }
             } else {
-                console.log('Failed to fetch az cli version from agent. Reverting back to azcliversion input.')
+                console.log('Failed to fetch az cli version from agent. Reverting back to latest.')
+                azcliversion = 'latest'
             }
-            azcliversion = agentAzCliVersion
         }
 
         if (!(await checkIfValidCLIVersion(azcliversion))) {

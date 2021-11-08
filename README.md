@@ -6,9 +6,8 @@ With Azure CLI GitHub Action, you can automate your workflow by executing [Azure
 The action executes the Azure CLI Bash script on a user defined Azure CLI version. If the user does not specify a version, latest CLI version is used.
 Read more about various Azure CLI versions [here](https://github.com/Azure/azure-cli/releases).
 
-- `azcliversion` – **Optional** Example: 2.0.72, Default: latest
+- `azcliversion` – **Optional** Example: 2.0.72, Default: set to az cli version of the agent.
 - `inlineScript` – **Required** 
-- `restrictLatestToAgent` – **Optional** If set to true, latest will be restricted to az cli version available on the agent. This can be used as a safeguard against any mismatch between az cli version on the agent and latest. Valid values are true and false. Default value set to false
 
 Azure CLI GitHub Action is supported for the Azure public cloud as well as Azure government clouds ('AzureUSGovernment' or 'AzureChinaCloud') and Azure Stack ('AzureStack') Hub. Before running this action, login to the respective Azure Cloud  using [Azure Login](https://github.com/Azure/login) by setting appropriate value for the `environment` parameter.
 
