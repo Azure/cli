@@ -8,7 +8,7 @@ inputs:
   azcliversion:
     description: 'Azure CLI version to be used to execute the script. If not provided, latest version is used'
     required: false
-    default: 'latest'
+    default: 'agentazcliversion'
 branding:
   icon: 'login.svg'
   color: 'blue'

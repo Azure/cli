@@ -3,6 +3,8 @@ import * as exec from '@actions/exec';
 import * as io from '@actions/io';
 import * as os from 'os';
 import * as path from 'path';
+const util = require('util');
+const cpExec = util.promisify(require('child_process').exec);
 
 import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime, checkIfEnvironmentVariableIsOmitted } from './utils';
 
@@ -10,7 +12,7 @@ const START_SCRIPT_EXECUTION_MARKER: string = `Starting script execution via doc
 const BASH_ARG: string = `bash --noprofile --norc -e `;
 const CONTAINER_WORKSPACE: string = '/github/workspace';
 const CONTAINER_TEMP_DIRECTORY: string = '/_temp';
-
+const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion'
 
 export const run = async () => {
     var scriptFileName: string = '';
@@ -22,8 +24,24 @@ export const run = async () => {
         }
 
         let inlineScript: string = core.getInput('inlineScript', { required: true });
-        let azcliversion: string = core.getInput('azcliversion', { required: true }).trim().toLowerCase();
-       
+        let azcliversion: string = core.getInput('azcliversion', { required: false }).trim().toLowerCase();
+
+        if(azcliversion == AZ_CLI_VERSION_DEFAULT_VALUE){
+            const { stdout, stderr } = await cpExec('az version');
+            if (!stderr) {
+                try {
+                    azcliversion = JSON.parse(stdout)["azure-cli"]
+                }
+                catch (er) {
+                    console.log('Failed to fetch az cli version from agent. Reverting back to latest.')
+                    azcliversion = 'latest'
+                }
+            } else {
+                console.log('Failed to fetch az cli version from agent. Reverting back to latest.')
+                azcliversion = 'latest'
+            }
+        }
+
         if (!(await checkIfValidCLIVersion(azcliversion))) {
             core.setFailed('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.');
             throw new Error('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.')

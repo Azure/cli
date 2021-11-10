@@ -14,13 +14,15 @@
   "author": "Microsoft",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^12.7.11",
-    "typescript": "^3.6.3"
+    "@zeit/ncc": "^0.21.1",
+    "tslint": "^6.1.0",
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/exec": "^1.0.1",
-    "@actions/io": "^1.0.1"
+    "@actions/io": "^1.0.1",
+    "@types/node": "^13.9.1"
   },
   "bugs": {
     "url": "https://github.com/Azure/CLI/issues"
