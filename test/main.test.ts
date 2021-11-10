@@ -1,4 +1,4 @@
-import { run } from "../main";
+import { run } from "../src/main";
 import * as core from '@actions/core';
 
 run()

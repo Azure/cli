@@ -24,7 +24,7 @@ export const run = async () => {
         }
 
         let inlineScript: string = core.getInput('inlineScript', { required: true });
-        let azcliversion: string = core.getInput('azcliversion', { required: true }).trim().toLowerCase();
+        let azcliversion: string = core.getInput('azcliversion', { required: false }).trim().toLowerCase();
 
         if(azcliversion == AZ_CLI_VERSION_DEFAULT_VALUE){
             const { stdout, stderr } = await cpExec('az version');
