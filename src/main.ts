@@ -32,8 +32,7 @@ export const run = async () => {
                 if (!stderr) {
                     azcliversion = JSON.parse(stdout)["azure-cli"]
                 } else {
-                    console.log('Failed to fetch az cli version from agent. Reverting back to latest.')
-                    azcliversion = 'latest'
+                    throw stderr
                 }
             } catch (err) {
                 console.log('Failed to fetch az cli version from agent. Reverting back to latest.')
