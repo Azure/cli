@@ -26,17 +26,22 @@ export const run = async () => {
         let inlineScript: string = core.getInput('inlineScript', { required: true });
         let azcliversion: string = core.getInput('azcliversion', { required: false }).trim().toLowerCase();
 
-        if(azcliversion == AZ_CLI_VERSION_DEFAULT_VALUE){
-            const { stdout, stderr } = await cpExec('az version');
-            if (!stderr) {
-                try {
-                    azcliversion = JSON.parse(stdout)["azure-cli"]
-                }
-                catch (er) {
+        if (azcliversion == AZ_CLI_VERSION_DEFAULT_VALUE) {
+            try {
+                const { stdout, stderr } = await cpExec('az version');
+                if (!stderr) {
+                    try {
+                        azcliversion = JSON.parse(stdout)["azure-cli"]
+                    }
+                    catch (er) {
+                        console.log('Failed to fetch az cli version from agent. Reverting back to latest.')
+                        azcliversion = 'latest'
+                    }
+                } else {
                     console.log('Failed to fetch az cli version from agent. Reverting back to latest.')
                     azcliversion = 'latest'
                 }
-            } else {
+            } catch (err) {
                 console.log('Failed to fetch az cli version from agent. Reverting back to latest.')
                 azcliversion = 'latest'
             }
