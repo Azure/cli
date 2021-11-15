@@ -30,13 +30,7 @@ export const run = async () => {
             try {
                 const { stdout, stderr } = await cpExec('az version');
                 if (!stderr) {
-                    try {
-                        azcliversion = JSON.parse(stdout)["azure-cli"]
-                    }
-                    catch (er) {
-                        console.log('Failed to fetch az cli version from agent. Reverting back to latest.')
-                        azcliversion = 'latest'
-                    }
+                    azcliversion = JSON.parse(stdout)["azure-cli"]
                 } else {
                     console.log('Failed to fetch az cli version from agent. Reverting back to latest.')
                     azcliversion = 'latest'
