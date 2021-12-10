@@ -6,19 +6,19 @@ With Azure CLI GitHub Action, you can automate your workflow by executing [Azure
 The action executes the Azure CLI Bash script on a user defined Azure CLI version. If the user does not specify a version, latest CLI version is used.
 Read more about various Azure CLI versions [here](https://github.com/Azure/azure-cli/releases).
 
-- `azcliversion` – **Optional** Example: 2.0.72, Default: set to az cli version of the agent.
-- `inlineScript` – **Required** 
+- `azcliversion` – **Optional** Example: 2.30.0, Default: set to az cli version of the agent.
+- `inlineScript` – **Required**
 
 Azure CLI GitHub Action is supported for the Azure public cloud as well as Azure government clouds ('AzureUSGovernment' or 'AzureChinaCloud') and Azure Stack ('AzureStack') Hub. Before running this action, login to the respective Azure Cloud  using [Azure Login](https://github.com/Azure/login) by setting appropriate value for the `environment` parameter.
 
-The definition of this GitHub Action is in [action.yml](https://github.com/Azure/CLI/blob/master/action.yml).  The action status is determined by the exit code returned by the script rather than StandardError stream. 
+The definition of this GitHub Action is in [action.yml](https://github.com/Azure/CLI/blob/master/action.yml).  The action status is determined by the exit code returned by the script rather than StandardError stream.
 
 ## Note
-Please note that the action executes Az CLI script in a docker container. This means that the action is subjected to potential restrictions which arise from containerized execution. For example: 
+Please note that the action executes Az CLI script in a docker container. This means that the action is subjected to potential restrictions which arise from containerized execution. For example:
   1. If script sets up an environment variable, it will not take effect in host and hence subsequent actions shouldn't rely on such environment variable.
   2. There is some restriction on how cross action file read/write is done. GITHUB_WORKSPACE directory in host is mapped to working directory inside container. So, if the action wants to create a file, which will be read by subsequent actions, it should do so within current working directory tree.
 
-## Sample workflow 
+## Sample workflow
 
 ### Dependencies on other GitHub Actions
 * [Azure Login](https://github.com/Azure/login) – **Optional**  Login with your Azure credentials, required only for authentication via azure credentials. Authentication via connection strings or keys do not require this step.
@@ -38,16 +38,16 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    
+
     - name: Azure Login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-    
+
     - name: Azure CLI script
       uses: azure/CLI@v1
       with:
-        azcliversion: 2.0.72
+        azcliversion: 2.30.0
         inlineScript: |
           az account show
           az storage -h
@@ -66,7 +66,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    
+
     - name: Azure Login
       uses: azure/login@v1
       with:
@@ -78,7 +78,7 @@ jobs:
     - name: Azure CLI script file
       uses: azure/CLI@v1
       with:
-        azcliversion: 2.0.72
+        azcliversion: 2.30.0
         inlineScript: |
           chmod +x $GITHUB_WORKSPACE/sampleScript.sh
           $GITHUB_WORKSPACE/sampleScript.sh
@@ -92,12 +92,12 @@ To use any credentials like Azure Service Principal,add them as [secrets](https:
 Follow the steps to configure the secret:
   * Define a new secret under your repository settings, Add secret menu
   * Store the output of the below [az cli](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest) command as the value of secret variable 'AZURE_CREDENTIALS'
-```bash  
+```bash
 
    az ad sp create-for-rbac --name "myApp" --role contributor \
                             --scopes /subscriptions/{subscription-id}/resourceGroups/{resource-group} \
                             --sdk-auth
-                            
+
   # Replace {subscription-id}, {resource-group} with the subscription, resource group details
 
   # The command should output a JSON object similar to this:
@@ -109,7 +109,7 @@ Follow the steps to configure the secret:
     "tenantId": "<GUID>",
     (...)
   }
-  
+
 ```
   * Now in the workflow file in your branch: `.github/workflows/workflow.yml` replace the secret in Azure login action with your secret (Refer to the example above)
 
