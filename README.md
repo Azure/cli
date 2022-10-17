@@ -130,7 +130,7 @@ inputs:
     required: false
     default: 'latest'
 runs:
-  using: 'node14'
+  using: 'node16'
   main: 'lib/main.js'
 ```
 
