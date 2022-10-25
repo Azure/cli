@@ -12,7 +12,7 @@ const START_SCRIPT_EXECUTION_MARKER: string = `Starting script execution via doc
 const BASH_ARG: string = `bash --noprofile --norc -e `;
 const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion'
 
-export const run = async () => {
+export async function main(){
     var scriptFileName: string = '';
     const CONTAINER_NAME = `MICROSOFT_AZURE_CLI_${getCurrentTime()}_CONTAINER`;
     try {
@@ -39,12 +39,12 @@ export const run = async () => {
         }
 
         if (!(await checkIfValidCLIVersion(azcliversion))) {
-            core.setFailed('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.');
+            core.error('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.');
             throw new Error('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.')
         }
 
         if (!inlineScript.trim()) {
-            core.setFailed('Please enter a valid script.');
+            core.error('Please enter a valid script.');
             throw new Error('Please enter a valid script.')
         }
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
@@ -75,7 +75,6 @@ export const run = async () => {
         console.log("az script ran successfully.");
     } catch (error) {
         core.error(error);
-        core.setFailed(error.stderr);
         throw error;
     }
     finally {
@@ -155,5 +154,3 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         core.warning(errorStream)
     }
 }
-
-run();
