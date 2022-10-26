@@ -10,11 +10,9 @@ import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFi
 
 const START_SCRIPT_EXECUTION_MARKER: string = `Starting script execution via docker image mcr.microsoft.com/azure-cli:`;
 const BASH_ARG: string = `bash --noprofile --norc -e `;
-const CONTAINER_WORKSPACE: string = '/github/workspace';
-const CONTAINER_TEMP_DIRECTORY: string = '/_temp';
 const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion'
 
-export const run = async () => {
+export async function main(){
     var scriptFileName: string = '';
     const CONTAINER_NAME = `MICROSOFT_AZURE_CLI_${getCurrentTime()}_CONTAINER`;
     try {
@@ -41,17 +39,17 @@ export const run = async () => {
         }
 
         if (!(await checkIfValidCLIVersion(azcliversion))) {
-            core.setFailed('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.');
+            core.error('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.');
             throw new Error('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.')
         }
 
         if (!inlineScript.trim()) {
-            core.setFailed('Please enter a valid script.');
+            core.error('Please enter a valid script.');
             throw new Error('Please enter a valid script.')
         }
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
-        let startCommand: string = ` ${BASH_ARG}${CONTAINER_TEMP_DIRECTORY}/${scriptFileName} `;
+        let startCommand: string = ` ${BASH_ARG}${TEMP_DIRECTORY}/${scriptFileName} `;
         let environmentVariables = '';
         for (let key in process.env) {
             // if (key.toUpperCase().startsWith("GITHUB_") && key.toUpperCase() !== 'GITHUB_WORKSPACE' && process.env[key]){
@@ -59,6 +57,7 @@ export const run = async () => {
                 environmentVariables += ` -e "${key}=${process.env[key]}" `;
             }
         }
+
         /*
         For the docker run command, we are doing the following
         - Set the working directory for docker continer
@@ -66,15 +65,9 @@ export const run = async () => {
         - voulme mount .azure session token file between host and container,
         - volume mount temp directory between host and container, inline script file is created in temp directory
         */
-
-        let github_env_file_relative_path = path.relative(TEMP_DIRECTORY, process.env.GITHUB_ENV);;
-        const CONTAINER_GITHUB_ENV = path.resolve(CONTAINER_TEMP_DIRECTORY, github_env_file_relative_path);
-
-        let command: string = `run --workdir ${CONTAINER_WORKSPACE} -v ${process.env.GITHUB_WORKSPACE}:${CONTAINER_WORKSPACE} `;
-        command += ` -v ${process.env.HOME}/.azure:/root/.azure -v ${TEMP_DIRECTORY}:${CONTAINER_TEMP_DIRECTORY} `;
+        let command: string = `run --workdir ${process.env.GITHUB_WORKSPACE} -v ${process.env.GITHUB_WORKSPACE}:${process.env.GITHUB_WORKSPACE} `;
+        command += ` -v ${process.env.HOME}/.azure:/root/.azure -v ${TEMP_DIRECTORY}:${TEMP_DIRECTORY} `;
         command += ` ${environmentVariables} `;
-        command += `-e GITHUB_WORKSPACE=${CONTAINER_WORKSPACE} `;
-        command += `-e GITHUB_ENV=${CONTAINER_GITHUB_ENV} `;
         command += `--name ${CONTAINER_NAME} `;
         command += ` mcr.microsoft.com/azure-cli:${azcliversion} ${startCommand}`;
         console.log(`${START_SCRIPT_EXECUTION_MARKER}${azcliversion}`);
@@ -82,7 +75,6 @@ export const run = async () => {
         console.log("az script ran successfully.");
     } catch (error) {
         core.error(error);
-        core.setFailed(error.stderr);
         throw error;
     }
     finally {
@@ -162,5 +154,3 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         core.warning(errorStream)
     }
 }
-
-run();
