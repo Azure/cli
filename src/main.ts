@@ -154,3 +154,5 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
         core.warning(errorStream)
     }
 }
+
+main()
