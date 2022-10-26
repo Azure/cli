@@ -32,21 +32,21 @@ jobs:
           EXPECTED_TO: pass
         run: ts-node test/main.test.ts
       
-#       - name: Azure CLI Version Test - Negative
-#         env:
-#           INPUT_AZCLIVERSION: 0
-#           INPUT_INLINESCRIPT: |
-#             az account show
-#             az storage -h
-#           EXPECTED_TO: fail
-#         run: ts-node test/main.test.ts
+      - name: Azure CLI Version Test - Negative
+        env:
+          INPUT_AZCLIVERSION: 0
+          INPUT_INLINESCRIPT: |
+            az account show
+            az storage -h
+          EXPECTED_TO: fail
+        run: ts-node test/main.test.ts
         
-#       - name: Inline Script Test - Negative
-#         env:
-#           INPUT_AZCLIVERSION: 2.0.72
-#           INPUT_INLINESCRIPT: " "
-#           EXPECTED_TO: fail
-#         run: ts-node test/main.test.ts
+      - name: Inline Script Test - Negative
+        env:
+          INPUT_AZCLIVERSION: 2.0.72
+          INPUT_INLINESCRIPT: " "
+          EXPECTED_TO: fail
+        run: ts-node test/main.test.ts
         
       - name: Post to slack on failure
         if: failure()
