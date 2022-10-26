@@ -60,8 +60,6 @@ export const checkIfEnvironmentVariableIsOmitted = (key: string): boolean => {
         'GPG_KEY',
         'CONDA',
         'AGENT_TOOLSDIRECTORY',
-        'GITHUB_WORKSPACE',
-        'GITHUB_ENV',
         'RUNNER_PERFLOG',
         'RUNNER_WORKSPACE',
         'RUNNER_TEMP',
