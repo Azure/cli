@@ -1,4 +1,4 @@
-//Launch debug for test/LocalTest.test.js
+//Launch a debugger for test/LocalTest.test.js
 {
     "version": "0.2.0",
     "configurations": [
