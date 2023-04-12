@@ -82,6 +82,7 @@ export async function main(){
         const scriptFilePath: string = path.join(TEMP_DIRECTORY, scriptFileName);
         await deleteFile(scriptFilePath);
         console.log("cleaning up container...");
+        console.log("just test whether it runs the code in enable_test_locally branch");
         await executeDockerCommand(` container rm --force ${CONTAINER_NAME} `, true);
     }
 };

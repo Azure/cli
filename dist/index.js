@@ -3927,6 +3927,7 @@ function main() {
             const scriptFilePath = path.join(utils_1.TEMP_DIRECTORY, scriptFileName);
             yield utils_1.deleteFile(scriptFilePath);
             console.log("cleaning up container...");
+            console.log("just test whether it runs the code in enable_test_locally branch");
             yield executeDockerCommand(` container rm --force ${CONTAINER_NAME} `, true);
         }
     });
