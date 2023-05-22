@@ -95,5 +95,5 @@ export const checkIfEnvironmentVariableIsOmitted = (key: string): boolean => {
 }
 
 export const escapeDoubleQuote = (value: string): string => {
-    return value.replace(/"/g, '\\"');
+    return value.replaceAll('"', '\\"');
 }
