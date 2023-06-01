@@ -93,3 +93,7 @@ export const checkIfEnvironmentVariableIsOmitted = (key: string): boolean => {
 
     return omitEnvironmentVariablesWithPrefix.some((prefix: string) => key.toUpperCase().startsWith(prefix));
 }
+
+export const escapeDoubleQuote = (value: string): string => {
+    return value.replace(/"/g, '\\"');
+}

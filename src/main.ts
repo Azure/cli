@@ -6,7 +6,7 @@ import * as path from 'path';
 const util = require('util');
 const cpExec = util.promisify(require('child_process').exec);
 
-import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime, checkIfEnvironmentVariableIsOmitted } from './utils';
+import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime, checkIfEnvironmentVariableIsOmitted, escapeDoubleQuote } from './utils';
 
 const START_SCRIPT_EXECUTION_MARKER: string = `Starting script execution via docker image mcr.microsoft.com/azure-cli:`;
 const BASH_ARG: string = `bash --noprofile --norc -e `;
@@ -54,7 +54,8 @@ export async function main(){
         for (let key in process.env) {
             // if (key.toUpperCase().startsWith("GITHUB_") && key.toUpperCase() !== 'GITHUB_WORKSPACE' && process.env[key]){
             if (!checkIfEnvironmentVariableIsOmitted(key) && process.env[key]) {
-                environmentVariables += ` -e "${key}=${process.env[key]}" `;
+                let value = escapeDoubleQuote(process.env[key]);
+                environmentVariables += ` -e "${key}=${value}" `;
             }
         }
 
@@ -71,6 +72,7 @@ export async function main(){
         command += `--name ${CONTAINER_NAME} `;
         command += ` mcr.microsoft.com/azure-cli:${azcliversion} ${startCommand}`;
         console.log(`${START_SCRIPT_EXECUTION_MARKER}${azcliversion}`);
+        console.log(`running docker command: ${command}`);
         await executeDockerCommand(command);
         console.log("az script ran successfully.");
     } catch (error) {
