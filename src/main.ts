@@ -56,8 +56,7 @@ export async function main() {
         - voulme mount .azure session token file between host and container,
         - volume mount temp directory between host and container, inline script file is created in temp directory
         */
-        let command: string = "run";
-        let args: string[] = ["--workdir", `${process.env.GITHUB_WORKSPACE}`,
+        let args: string[] = ["run", "--workdir", `${process.env.GITHUB_WORKSPACE}`,
             "-v", `${process.env.GITHUB_WORKSPACE}:${process.env.GITHUB_WORKSPACE}`,
             "-v", `${process.env.HOME}/.azure:/root/.azure`,
             "-v", `${TEMP_DIRECTORY}:${TEMP_DIRECTORY}`
@@ -72,7 +71,7 @@ export async function main() {
             "bash", "--noprofile", "--norc", "-e", `${TEMP_DIRECTORY}/${scriptFileName}`);
 
         console.log(`${START_SCRIPT_EXECUTION_MARKER}${azcliversion}`);
-        await executeDockerCommand(command, args);
+        await executeDockerCommand(args);
         console.log("az script ran successfully.");
     }
     catch (error) {
@@ -84,7 +83,7 @@ export async function main() {
         const scriptFilePath: string = path.join(TEMP_DIRECTORY, scriptFileName);
         await deleteFile(scriptFilePath);
         console.log("cleaning up container...");
-        await executeDockerCommand("rm", ["--force", CONTAINER_NAME], true);
+        await executeDockerCommand(["rm", "--force", CONTAINER_NAME], true);
     }
 };
 
@@ -117,7 +116,7 @@ const getAllAzCliVersions = async (): Promise<Array<string>> => {
     return [];
 }
 
-const executeDockerCommand = async (dockerCommand: string, args: string[], continueOnError: boolean = false): Promise<void> => {
+const executeDockerCommand = async (args: string[], continueOnError: boolean = false): Promise<void> => {
 
     const dockerTool: string = await io.which("docker", true);
     var errorStream: string = '';
@@ -142,7 +141,7 @@ const executeDockerCommand = async (dockerCommand: string, args: string[], conti
     };
     var exitCode;
     try {
-        exitCode = await exec.exec(`"${dockerTool}" ${dockerCommand}`, args, execOptions);
+        exitCode = await exec.exec(dockerTool, args, execOptions);
     } catch (error) {
         if (!continueOnError) {
             throw error;
