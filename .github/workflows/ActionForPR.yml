@@ -11,7 +11,7 @@ jobs:
         with:
           script: |
             github.rest.issues.createComment({
-              issue_number: context.pull.number,
+              issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: 'Thank you for your contribution! We will review the pull request and get back to you soon.'
@@ -22,19 +22,8 @@ jobs:
         with:
           script: |
             github.rest.issues.addAssignees({
-              issue_number: context.pull.number,
+              issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               assignees: ['MoChilia']
-            })
-
-      - name: Request a reviewer
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.pulls.requestReviewers({
-              issue_number: context.pull.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              reviewers: ['MoChilia']
             })
