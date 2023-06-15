@@ -1,0 +1,40 @@
+on:
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  pull-request:
+    runs-on: ubuntu-20.04
+    steps:  
+      - name: Say thanks for the pull request
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.pull.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Thank you for your contribution! We will review the pull request and get back to you soon.'
+            })
+
+      - name: Add an assignee
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addAssignees({
+              issue_number: context.pull.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              assignees: ['MoChilia']
+            })
+
+      - name: Request a reviewer
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.pulls.requestReviewers({
+              issue_number: context.pull.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              reviewers: ['MoChilia']
+            })
