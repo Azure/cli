@@ -1,0 +1,108 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release Version'
+        required: true
+
+jobs: 
+  pre-release: 
+    name: Draft a release
+    runs-on: ubuntu-latest 
+    steps: 
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Bump version
+        continue-on-error: true
+        run: |
+          npm version ${{ github.event.inputs.version }}
+          git push origin master
+      
+      - name: Get last version
+        uses: actions/github-script@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: get-last-version
+        with:
+          script: |
+            const release = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            })
+            console.log(`Last version is ${release.data.name}`)
+            core.setOutput('last_version', release.data.name)
+
+      - name: Major or minor release
+        id: get-type
+        run: |
+          last_version=${{ steps.get-last-version.outputs.last_version }}
+          last_version="${last_version#v}"
+          last_major_version="${last_version%%.*}"
+          new_version=${{ github.event.inputs.version }}
+          new_version="${new_version#v}"
+          new_major_version="${new_version%%.*}"
+          if [ "$last_major_version" -eq "$new_major_version" ]
+          then
+            type='minor'
+          else
+            type='major'
+          fi
+          echo "type=$type" >> $GITHUB_OUTPUT
+          echo "new_major_version=$new_major_version" >> $GITHUB_OUTPUT
+          echo "Release type is $type. New major version is $new_major_version."
+      
+      - name: Create a new branch for major release
+        if: steps.get-type.outputs.type == 'major'
+        run: |
+          new_major_version=${{ steps.get-type.outputs.new_major_version }}
+          git checkout -b releases/v$new_major_version master
+          git push origin releases/v$new_major_version
+      
+      - name: Merge from master branch for minor release
+        if: steps.get-type.outputs.type == 'minor'
+        uses: actions/github-script@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            const major_version = ${{ steps.get-type.outputs.new_major_version }}
+            github.rest.repos.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              base: `releases/v${major_version}`,
+              head: 'master'
+            })
+
+      - name: Create a draft release
+        uses: actions/github-script@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            const notes = await github.rest.repos.generateReleaseNotes({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `${{ github.event.inputs.version }}`,
+              target_commitish: `releases/v${{ steps.get-type.outputs.new_major_version }}`,
+              previous_tag_name: `${{ steps.get-last-version.outputs.last_version }}`,
+              configuration_file_path: '.github/custom_release_config.yml'
+            })
+
+            github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `${{ github.event.inputs.version }}`,
+              target_commitish: `releases/v${{ steps.get-type.outputs.new_major_version }}`,
+              name: notes.data.name,
+              body: notes.data.body,
+              draft: true
+            })

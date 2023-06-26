@@ -3,11 +3,11 @@ on:
     branches:
       - master
 
-name: build-release
+name: build
 
 jobs:
   build:
-    name: build-release
+    name: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -33,7 +33,7 @@ jobs:
           git config --local user.name "GitHub Action"
 
           git add dist/index.js -f
-          git commit -m "Add changes"
+          git commit -m "Build index.js"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
