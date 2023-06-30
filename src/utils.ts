@@ -27,7 +27,7 @@ export const deleteFile = async (filePath: string) => {
     }
 }
 
-export const giveExecutablePermissionsToFile = async (filePath: string): Promise<number> => await exec.exec(`chmod +x ${filePath}`, [], { silent: true })
+export const giveExecutablePermissionsToFile = async (filePath: string): Promise<number> => await exec.exec('chmod', ['+x', filePath], { silent: true })
 
 export const getCurrentTime = (): number => {
     return new Date().getTime();
