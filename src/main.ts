@@ -8,11 +8,10 @@ const cpExec = util.promisify(require('child_process').exec);
 
 import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime, checkIfEnvironmentVariableIsOmitted } from './utils';
 
-const START_SCRIPT_EXECUTION_MARKER: string = `Starting script execution via docker image mcr.microsoft.com/azure-cli:`;
-const BASH_ARG: string = `bash --noprofile --norc -e `;
+const START_SCRIPT_EXECUTION_MARKER: string = "Starting script execution via docker image mcr.microsoft.com/azure-cli:";
 const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion'
 
-export async function main(){
+export async function main() {
     var scriptFileName: string = '';
     const CONTAINER_NAME = `MICROSOFT_AZURE_CLI_${getCurrentTime()}_CONTAINER`;
     try {
@@ -49,14 +48,6 @@ export async function main(){
         }
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
-        let startCommand: string = ` ${BASH_ARG}${TEMP_DIRECTORY}/${scriptFileName} `;
-        let environmentVariables = '';
-        for (let key in process.env) {
-            // if (key.toUpperCase().startsWith("GITHUB_") && key.toUpperCase() !== 'GITHUB_WORKSPACE' && process.env[key]){
-            if (!checkIfEnvironmentVariableIsOmitted(key) && process.env[key]) {
-                environmentVariables += ` -e "${key}=${process.env[key]}" `;
-            }
-        }
 
         /*
         For the docker run command, we are doing the following
@@ -65,15 +56,25 @@ export async function main(){
         - voulme mount .azure session token file between host and container,
         - volume mount temp directory between host and container, inline script file is created in temp directory
         */
-        let command: string = `run --workdir ${process.env.GITHUB_WORKSPACE} -v ${process.env.GITHUB_WORKSPACE}:${process.env.GITHUB_WORKSPACE} `;
-        command += ` -v ${process.env.HOME}/.azure:/root/.azure -v ${TEMP_DIRECTORY}:${TEMP_DIRECTORY} `;
-        command += ` ${environmentVariables} `;
-        command += `--name ${CONTAINER_NAME} `;
-        command += ` mcr.microsoft.com/azure-cli:${azcliversion} ${startCommand}`;
+        let args: string[] = ["run", "--workdir", `${process.env.GITHUB_WORKSPACE}`,
+            "-v", `${process.env.GITHUB_WORKSPACE}:${process.env.GITHUB_WORKSPACE}`,
+            "-v", `${process.env.HOME}/.azure:/root/.azure`,
+            "-v", `${TEMP_DIRECTORY}:${TEMP_DIRECTORY}`
+        ];
+        for (let key in process.env) {
+            if (!checkIfEnvironmentVariableIsOmitted(key) && process.env[key]) {
+                args.push("-e", `${key}=${process.env[key]}`);
+            }
+        }
+        args.push("--name", CONTAINER_NAME,
+            `mcr.microsoft.com/azure-cli:${azcliversion}`,
+            "bash", "--noprofile", "--norc", "-e", `${TEMP_DIRECTORY}/${scriptFileName}`);
+
         console.log(`${START_SCRIPT_EXECUTION_MARKER}${azcliversion}`);
-        await executeDockerCommand(command);
+        await executeDockerCommand(args);
         console.log("az script ran successfully.");
-    } catch (error) {
+    }
+    catch (error) {
         core.error(error);
         throw error;
     }
@@ -82,7 +83,7 @@ export async function main(){
         const scriptFilePath: string = path.join(TEMP_DIRECTORY, scriptFileName);
         await deleteFile(scriptFilePath);
         console.log("cleaning up container...");
-        await executeDockerCommand(` container rm --force ${CONTAINER_NAME} `, true);
+        await executeDockerCommand(["rm", "--force", CONTAINER_NAME], true);
     }
 };
 
@@ -104,7 +105,7 @@ const getAllAzCliVersions = async (): Promise<Array<string>> => {
     };
 
     try {
-        await exec.exec(`curl --location -s https://mcr.microsoft.com/v2/azure-cli/tags/list`, [], execOptions)
+        await exec.exec("curl", ["--location", "-s", "https://mcr.microsoft.com/v2/azure-cli/tags/list"], execOptions)
         if (outStream && JSON.parse(outStream).tags) {
             return JSON.parse(outStream).tags;
         }
@@ -115,7 +116,7 @@ const getAllAzCliVersions = async (): Promise<Array<string>> => {
     return [];
 }
 
-const executeDockerCommand = async (dockerCommand: string, continueOnError: boolean = false): Promise<void> => {
+const executeDockerCommand = async (args: string[], continueOnError: boolean = false): Promise<void> => {
 
     const dockerTool: string = await io.which("docker", true);
     var errorStream: string = '';
@@ -140,7 +141,7 @@ const executeDockerCommand = async (dockerCommand: string, continueOnError: bool
     };
     var exitCode;
     try {
-        exitCode = await exec.exec(`"${dockerTool}" ${dockerCommand}`, [], execOptions);
+        exitCode = await exec.exec(dockerTool, args, execOptions);
     } catch (error) {
         if (!continueOnError) {
             throw error;
