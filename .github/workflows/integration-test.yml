@@ -14,6 +14,20 @@ jobs:
       - name: Check out source code
         uses: actions/checkout@v3.5.2
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Install dependencies
+        run: |
+          sudo npm i -g @vercel/ncc
+          npm install 
+
+      - name: Compile files
+        run: |
+          ncc build -C -m src/entrypoint.ts
+
       - name: Test - Postive
         uses: ./
         with:
