@@ -29,7 +29,7 @@ jobs:
             az --version
             az account --help
       
-      - name: Invaild Version test - Negative
+      - name: Invalid Version test - Negative
         id: test1
         continue-on-error: true
         uses: ./
@@ -45,7 +45,7 @@ jobs:
           script: |
             core.setFailed('Last action should fail but not. Please check it.')
 
-      - name: Invaild Script test - Negative
+      - name: Invalid Script test - Negative
         id: test2
         continue-on-error: true
         uses: ./
