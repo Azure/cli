@@ -1,0 +1,61 @@
+name: integration-test
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - releases/*
+  workflow_dispatch:
+ 
+jobs:
+  basic_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source code
+        uses: actions/checkout@v3.5.2
+
+      - name: Test - Postive
+        uses: ./
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |
+            az --version
+            az account --help
+      
+      - name: Default version test - Postive
+        uses: ./
+        with:
+          inlineScript: |
+            az --version
+            az account --help
+      
+      - name: Invaild Version test - Negative
+        id: test1
+        continue-on-error: true
+        uses: ./
+        with:
+          azcliversion: 0
+          inlineScript: |
+            az --version
+      
+      - name: Check Last step failed
+        if: steps.test1.outcome == 'success'
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Last action should fail but not. Please check it.')
+
+      - name: Invaild Script test - Negative
+        id: test2
+        continue-on-error: true
+        uses: ./
+        with:
+          azcliversion: latest
+          inlineScript: " "
+      
+      - name: Check Last step failed
+        if: steps.test2.outcome == 'success'
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Last action should fail but not. Please check it.')
