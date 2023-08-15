@@ -1,18 +1,26 @@
 name: Release
+run-name: Release for ${{ github.event.inputs.target }}
 
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Release Version'
+      target_version:
+        description: 'The target release version'
         required: true
+    
+      major_version:
+        type: choice
+        description: 'The major version'
+        options:
+          - v1
 
 jobs: 
-  pre-release: 
+  prepare-release: 
     name: Draft a release
     runs-on: ubuntu-latest 
     steps: 
-      - uses: actions/checkout@v3
+      - name: Checkout to master branch
+        uses: actions/checkout@v3.5.2
         with:
           ref: master
 
@@ -24,9 +32,19 @@ jobs:
       - name: Bump version
         continue-on-error: true
         run: |
-          npm version ${{ github.event.inputs.version }}
+          npm version ${{ github.event.inputs.target_version }}
           git push origin master
+
+      - uses: actions/checkout@v3.5.2
+        with:
+          ref: "releases/${{ github.event.inputs.major_version }}"
       
+      - name: Fast-forward release branch to master
+        run: |
+          git checkout
+          git merge master --ff-only
+          git push origin releases/${{ github.event.inputs.major_version }}
+
       - name: Get last version
         uses: actions/github-script@v6
         env:
@@ -41,59 +59,6 @@ jobs:
             console.log(`Last version is ${release.data.name}`)
             core.setOutput('last_version', release.data.name)
 
-      - name: Major or minor release
-        id: get-type
-        run: |
-          last_version=${{ steps.get-last-version.outputs.last_version }}
-          last_version="${last_version#v}"
-          last_major_version="${last_version%%.*}"
-          new_version=${{ github.event.inputs.version }}
-          new_version="${new_version#v}"
-          new_major_version="${new_version%%.*}"
-          if [ "$last_major_version" -eq "$new_major_version" ]
-          then
-            type='minor'
-          else
-            type='major'
-          fi
-          echo "type=$type" >> $GITHUB_OUTPUT
-          echo "new_major_version=$new_major_version" >> $GITHUB_OUTPUT
-          echo "Release type is $type. New major version is $new_major_version."
-      
-      - name: Create a new branch for major release
-        if: steps.get-type.outputs.type == 'major'
-        run: |
-          new_major_version="v${{ steps.get-type.outputs.new_major_version }}"
-          git checkout -b releases/$new_major_version master
-          git push origin releases/$new_major_version
-
-      - name: Merge from master branch for minor release
-        if: steps.get-type.outputs.type == 'minor'
-        uses: actions/github-script@v6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          script: |
-            const major_version = "v${{ steps.get-type.outputs.new_major_version }}"
-            github.rest.repos.merge({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              base: `releases/${major_version}`,
-              head: 'master'
-            })
-
-      - uses: actions/checkout@v3
-        if: steps.get-type.outputs.type == 'minor'
-        with:
-          ref: "releases/v${{ steps.get-type.outputs.new_major_version }}"
-
-      - name: Update major release tag for minor release
-        if: steps.get-type.outputs.type == 'minor'
-        run: |
-          major_tag="v${{ steps.get-type.outputs.new_major_version }}"
-          git tag -fa $major_tag -m "Update major release tag"
-          git push origin $major_tag --force
-
       - name: Create a new draft release
         uses: actions/github-script@v6
         env:
@@ -103,8 +68,8 @@ jobs:
             const notes = await github.rest.repos.generateReleaseNotes({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: `${{ github.event.inputs.version }}`,
-              target_commitish: `releases/v${{ steps.get-type.outputs.new_major_version }}`,
+              tag_name: `${{ github.event.inputs.target_version }}`,
+              target_commitish: `releases/${{ github.event.inputs.major_version }}`,
               previous_tag_name: `${{ steps.get-last-version.outputs.last_version }}`,
               configuration_file_path: '.github/custom_release_config.yml'
             })
@@ -112,8 +77,8 @@ jobs:
             github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: `${{ github.event.inputs.version }}`,
-              target_commitish: `releases/v${{ steps.get-type.outputs.new_major_version }}`,
+              tag_name: `${{ github.event.inputs.target_version }}`,
+              target_commitish: `releases/${{ github.event.inputs.major_version }}`,
               name: notes.data.name,
               body: notes.data.body,
               draft: true

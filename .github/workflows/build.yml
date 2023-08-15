@@ -11,16 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@master
+        uses: actions/checkout@3.5.2
 
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
           node-version: "16.x"
 
-      - run: sudo npm i -g @vercel/ncc
-
-      - run: npm install 
+      - name: Install dependencies
+        run: |
+          sudo npm i -g @vercel/ncc
+          npm install 
 
       - name: Compile files
         run: |
