@@ -1,6 +1,6 @@
 name: integration-test
 on:
-  pull_request:
+  pull_request_target:
   push:
     branches:
       - master
@@ -9,6 +9,7 @@ on:
  
 jobs:
   basic_test:
+    environment: Automation Test
     runs-on: ubuntu-latest
     steps:
       - name: Check out source code
@@ -28,20 +29,24 @@ jobs:
         run: |
           ncc build -C -m src/entrypoint.ts
 
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Test - Postive
         uses: ./
         with:
           azcliversion: 2.30.0
           inlineScript: |
             az --version
-            az account --help
+            az account show
       
       - name: Default version test - Postive
         uses: ./
         with:
           inlineScript: |
             az --version
-            az account --help
+            az account show
       
       - name: Invalid Version test - Negative
         id: test1
