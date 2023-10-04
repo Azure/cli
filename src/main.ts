@@ -8,7 +8,7 @@ const cpExec = util.promisify(require('child_process').exec);
 
 import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime, checkIfEnvironmentVariableIsOmitted } from './utils';
 
-const START_SCRIPT_EXECUTION_MARKER: string = "Starting script execution via docker image mcr.microsoft.com/azure-cli:";
+const START_SCRIPT_EXECUTION_MARKER: string = "Never gonna give you up, Never gonna let you down, Never gonna run around and desert you, ...";
 const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion'
 
 export async function main() {
