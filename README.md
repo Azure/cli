@@ -19,7 +19,7 @@ Please note that the action executes Az CLI script in a docker container. This m
   2. There is some restriction on how cross action file read/write is done. GITHUB_WORKSPACE directory in host is mapped to working directory inside container. So, if the action wants to create a file, which will be read by subsequent actions, it should do so within current working directory tree.
 
 > [!WARNING]
-> By default, Azure CLI commands’ output is printed to the stdout stream. Without redirecting the stdout stream, contents in it will be stored in the build logs of the action. You may configure Azure CLI to not print any output by setting the environment variable `AZURE_CORE_OUTPUT` to `none`. If you need the output of a specific command, you can add argument `--output json` to restore its output. For more information about the configuration settings and output format of Azure CLI, see [CLI configuration values and environment variables](https://learn.microsoft.com/cli/azure/azure-cli-configuration#cli-configuration-values-and-environment-variables).
+> By default, the output of Azure CLI commands print to the stdout stream and are stored in the build logs of the action. Configure Azure CLI to _not_ show output in the console screen or print in the log by setting the environment variable `AZURE_CORE_OUTPUT` to `none`. If you need the output of a specific command, override the default setting using the argument `--output` with your format of choice. For more information on output options with the Azure CLI, see [Format output](https://learn.microsoft.com/cli/azure/format-output-azure-cli).
 
 ## Sample workflow
 
