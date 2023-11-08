@@ -15,7 +15,7 @@ const prefix = !!process.env.AZURE_HTTP_USER_AGENT ? `${process.env.AZURE_HTTP_U
 export async function main() {
     let usrAgentRepo = `${process.env.GITHUB_REPOSITORY}`;
     let actionName = 'AzureCLIAction';
-    let userAgentString = (!!prefix ? `${prefix}+` : '') + `GITHUBACTIONS/${actionName}@v1_${usrAgentRepo}`;
+    let userAgentString = (!!prefix ? `${prefix}+` : '') + `GITHUBACTIONS/${actionName}_${usrAgentRepo}`;
     core.exportVariable('AZURE_HTTP_USER_AGENT', userAgentString);
 
     var scriptFileName: string = '';
