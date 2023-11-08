@@ -9,9 +9,15 @@ const cpExec = util.promisify(require('child_process').exec);
 import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime, checkIfEnvironmentVariableIsOmitted } from './utils';
 
 const START_SCRIPT_EXECUTION_MARKER: string = "Starting script execution via docker image mcr.microsoft.com/azure-cli:";
-const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion'
+const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion';
+const prefix = !!process.env.AZURE_HTTP_USER_AGENT ? `${process.env.AZURE_HTTP_USER_AGENT}` : "";
 
 export async function main() {
+    let usrAgentRepo = `${process.env.GITHUB_REPOSITORY}`;
+    let actionName = 'AzureCLIAction';
+    let userAgentString = (!!prefix ? `${prefix}+` : '') + `GITHUBACTIONS/${actionName}@v1_${usrAgentRepo}`;
+    core.exportVariable('AZURE_HTTP_USER_AGENT', userAgentString);
+
     var scriptFileName: string = '';
     const CONTAINER_NAME = `MICROSOFT_AZURE_CLI_${getCurrentTime()}_CONTAINER`;
     try {
