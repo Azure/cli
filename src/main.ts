@@ -3,6 +3,7 @@ import * as exec from '@actions/exec';
 import * as io from '@actions/io';
 import * as os from 'os';
 import * as path from 'path';
+import * as crypto from 'crypto';
 const util = require('util');
 const cpExec = util.promisify(require('child_process').exec);
 
@@ -13,7 +14,7 @@ const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion';
 const prefix = !!process.env.AZURE_HTTP_USER_AGENT ? `${process.env.AZURE_HTTP_USER_AGENT}` : "";
 
 export async function main() {
-    let usrAgentRepo = `${process.env.GITHUB_REPOSITORY}`;
+    let usrAgentRepo = crypto.createHash('sha256').update(`${process.env.GITHUB_REPOSITORY}`).digest('hex');
     let actionName = 'AzureCLIAction';
     let userAgentString = (!!prefix ? `${prefix}+` : '') + `GITHUBACTIONS/${actionName}_${usrAgentRepo}`;
     core.exportVariable('AZURE_HTTP_USER_AGENT', userAgentString);
