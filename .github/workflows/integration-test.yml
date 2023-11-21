@@ -1,40 +1,19 @@
-name: pr-test
+name: integration-test
 on:
-  pull_request_target:
-  push:
-    branches:
-      - master
-      - releases/*
   workflow_dispatch:
+  schedule:
+    - cron: '0 */3 * * *'
  
 jobs:
   basic_test:
-    environment: Automation Test
     runs-on: ubuntu-latest
     steps:
-      - name: Check out source code
-        uses: actions/checkout@v3.5.2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: "16.x"
-
-      - name: Install dependencies
-        run: |
-          sudo npm i -g @vercel/ncc
-          npm install 
-
-      - name: Compile files
-        run: |
-          ncc build -C -m src/entrypoint.ts
-
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Test - Postive
-        uses: ./
+        uses: azure/cli@master
         with:
           azcliversion: 2.30.0
           inlineScript: |
@@ -42,7 +21,7 @@ jobs:
             az account show --output none
       
       - name: Default version test - Postive
-        uses: ./
+        uses: azure/cli@master
         with:
           inlineScript: |
             az --version
@@ -51,7 +30,7 @@ jobs:
       - name: Invalid Version test - Negative
         id: test1
         continue-on-error: true
-        uses: ./
+        uses: azure/cli@master
         with:
           azcliversion: 0
           inlineScript: |
@@ -67,11 +46,11 @@ jobs:
       - name: Invalid Script test - Negative
         id: test2
         continue-on-error: true
-        uses: ./
+        uses: azure/cli@master
         with:
           azcliversion: latest
           inlineScript: " "
-      
+
       - name: Check Last step failed
         if: steps.test2.outcome == 'success'
         uses: actions/github-script@v3
@@ -79,27 +58,19 @@ jobs:
           script: |
             core.setFailed('Last action should fail but not. Please check it.')
 
+      - name: Post to slack on failure
+        if: failure()
+        uses: 8398a7/action-slack@v3.9.1
+        with:
+           status: ${{ job.status }}
+           fields: repo,message,author,action,ref,workflow
+        env:
+           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
   os_test:
     environment: Automation Test
     runs-on: windows-latest
     steps:
-      - name: Check out source code
-        uses: actions/checkout@v3.5.2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: "16.x"
-
-      - name: Install dependencies
-        run: |
-          sudo npm i -g @vercel/ncc
-          npm install 
-
-      - name: Compile files
-        run: |
-          ncc build -C -m src/entrypoint.ts
-
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -107,15 +78,24 @@ jobs:
       - name: Invalid OS - Negative
         id: test3
         continue-on-error: true
-        uses: ./
+        uses: azure/cli@master
         with:
           azcliversion: latest
           inlineScript: |
             az --version
-      
+
       - name: Check Last step failed
         if: steps.test3.outcome == 'success'
         uses: actions/github-script@v3
         with:
           script: |
             core.setFailed('Last action should fail but not. Please check it.')
+
+      - name: Post to slack on failure
+        if: failure()
+        uses: 8398a7/action-slack@v3.9.1
+        with:
+           status: ${{ job.status }}
+           fields: repo,message,author,action,ref,workflow
+        env:
+           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
