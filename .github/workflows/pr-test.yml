@@ -1,10 +1,6 @@
-name: integration-test
+name: pr-test
 on:
   pull_request_target:
-  push:
-    branches:
-      - master
-      - releases/*
   workflow_dispatch:
  
 jobs:
@@ -39,14 +35,14 @@ jobs:
           azcliversion: 2.30.0
           inlineScript: |
             az --version
-            az account show
+            az account show --output none
       
       - name: Default version test - Postive
         uses: ./
         with:
           inlineScript: |
             az --version
-            az account show
+            az account show --output none
       
       - name: Invalid Version test - Negative
         id: test1
@@ -74,6 +70,47 @@ jobs:
       
       - name: Check Last step failed
         if: steps.test2.outcome == 'success'
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Last action should fail but not. Please check it.')
+
+  os_test:
+    environment: Automation Test
+    runs-on: windows-latest
+    steps:
+      - name: Check out source code
+        uses: actions/checkout@v3.5.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Install dependencies
+        run: |
+          sudo npm i -g @vercel/ncc
+          npm install 
+
+      - name: Compile files
+        run: |
+          ncc build -C -m src/entrypoint.ts
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Invalid OS- Negative
+        id: test3
+        continue-on-error: true
+        uses: ./
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az --version
+      
+      - name: Check Last step failed
+        if: steps.test3.outcome == 'success'
         uses: actions/github-script@v3
         with:
           script: |
