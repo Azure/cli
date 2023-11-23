@@ -10,7 +10,7 @@ const cpExec = util.promisify(require('child_process').exec);
 import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime, checkIfEnvironmentVariableIsOmitted } from './utils';
 
 const START_SCRIPT_EXECUTION_MARKER: string = "Starting script execution via docker image mcr.microsoft.com/azure-cli:";
-const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion';
+const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion'
 const prefix = !!process.env.AZURE_HTTP_USER_AGENT ? `${process.env.AZURE_HTTP_USER_AGENT}` : "";
 
 export async function main() {
@@ -91,6 +91,8 @@ export async function main() {
         await deleteFile(scriptFilePath);
         console.log("cleaning up container...");
         await executeDockerCommand(["rm", "--force", CONTAINER_NAME], true);
+        // Reset AZURE_HTTP_USER_AGENT
+        core.exportVariable('AZURE_HTTP_USER_AGENT', prefix);
     }
 };
 
