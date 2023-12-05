@@ -25,8 +25,8 @@ The definition of this GitHub Action is in [action.yml](https://github.com/Azure
 
 ### Dependencies on other GitHub Actions
 * [Azure Login](https://github.com/Azure/login) – **Optional**  Login with your Azure credentials, required only for authentication via azure credentials. Authentication via connection strings or keys do not require this step.
-      > [!NOTE] 
-      > Make sure to either use default value of `azcliversion` or version above 2.30.0 for all the workflows using `GitHub hosted agents`.
+> [!NOTE] 
+> Make sure to either use default value of `azcliversion` or version above 2.30.0 for all the workflows using `GitHub hosted agents`.
 * [Checkout](https://github.com/actions/checkout) – **Optional** To execute the scripts present in your repository
 
 ### Workflow to execute an Azure CLI script of a specific CLI version
