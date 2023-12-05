@@ -16,7 +16,7 @@ The definition of this GitHub Action is in [action.yml](https://github.com/Azure
 > [!NOTE]
 > Please note that the action executes Azure CLI script in a docker container. This means that the action is subjected to potential restrictions which arise from containerized execution. For example:
 > 1. If script sets up an environment variable, it will not take effect in host and hence subsequent actions shouldn't rely on such environment variable.
-> 2. There is some restriction on how cross action file read/write is done. GITHUB_WORKSPACE directory in host is mapped to working directory inside container. So, if the action wants to create a file, which will be read by subsequent actions, it should do so within current working directory tree.
+> 2. There is some restriction on how cross action file read/write is done. `GITHUB_WORKSPACE` directory in host is mapped to working directory inside container. So, if the action wants to create a file, which will be read by subsequent actions, it should do so within current working directory tree.
 
 > [!WARNING]
 > By default, the output of Azure CLI commands print to the stdout stream and are stored in the build logs of the action. Configure Azure CLI to _not_ show output in the console screen or print in the log by setting the environment variable `AZURE_CORE_OUTPUT` to `none`. If you need the output of a specific command, override the default setting using the argument `--output` with your format of choice. For more information on output options with the Azure CLI, see [Format output](https://learn.microsoft.com/cli/azure/format-output-azure-cli).
@@ -25,7 +25,8 @@ The definition of this GitHub Action is in [action.yml](https://github.com/Azure
 
 ### Dependencies on other GitHub Actions
 * [Azure Login](https://github.com/Azure/login) – **Optional**  Login with your Azure credentials, required only for authentication via azure credentials. Authentication via connection strings or keys do not require this step.
-    > [!NOTE] Make sure to either use default value of `azcliversion` or version above 2.30.0 for all the workflows using `GitHub hosted agents`.
+      > [!NOTE] 
+      > Make sure to either use default value of `azcliversion` or version above 2.30.0 for all the workflows using `GitHub hosted agents`.
 * [Checkout](https://github.com/actions/checkout) – **Optional** To execute the scripts present in your repository
 
 ### Workflow to execute an Azure CLI script of a specific CLI version
