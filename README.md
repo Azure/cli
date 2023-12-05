@@ -24,10 +24,8 @@ The definition of this GitHub Action is in [action.yml](https://github.com/Azure
 ## Sample workflow
 
 ### Dependencies on other GitHub Actions
-* [Azure Login](https://github.com/Azure/login) – **Optional**  Login with your Azure credentials, required only for authentication via azure credentials. Authentication via connection strings or keys do not require this step.
-> [!NOTE] 
-> Make sure to either use default value of `azcliversion` or version above 2.30.0 for all the workflows using `GitHub hosted agents`.
-* [Checkout](https://github.com/actions/checkout) – **Optional** To execute the scripts present in your repository
+* [Azure Login](https://github.com/Azure/login) – **Optional** Login with your Azure credentials, required only for authentication via azure credentials. If you use this action, make sure to either use the default value of `azcliversion` or `azcliversion >= 2.30.0` for all the workflows. Authentication via connection strings or keys do not require this step.
+* [Checkout](https://github.com/actions/checkout) – **Optional** To execute the scripts present in your repository.
 
 ### Workflow to execute an Azure CLI script of a specific CLI version
 ```
@@ -87,7 +85,7 @@ jobs:
           chmod +x $GITHUB_WORKSPACE/sampleScript.sh
           $GITHUB_WORKSPACE/sampleScript.sh
 ```
-  * [GITHUB_WORKSPACE](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners) is the environment variable provided by GitHub which represents the root of your repository.
+* [`GITHUB_WORKSPACE`](https://docs.github.com/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#file-systems) is the environment variable provided by GitHub which represents the root of your repository.
 
 # Getting Help for Azure CLI Issues
 
