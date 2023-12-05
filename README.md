@@ -88,27 +88,6 @@ jobs:
 ```
   * [GITHUB_WORKSPACE](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners) is the environment variable provided by GitHub which represents the root of your repository.
 
-## Azure CLI Action metadata file
-
-```
-# File: action.yml
-
-# Automate your GitHub workflows using Azure CLI scripts.
-name: 'Azure CLI'
-description: 'The action is used to execute Azure CLI commands'
-inputs:
-  inlineScript:
-    description: 'Specify the script here'
-    required: true
-  azcliversion:
-    description: 'Azure CLI version to be used to execute the script'
-    required: false
-    default: 'latest'
-runs:
-  using: 'node16'
-  main: 'lib/main.js'
-```
-
 # Getting Help for Azure CLI Issues
 
 If you encounter an issue related to the Azure CLI commands executed in your script, you can file an issue directly on the [Azure CLI repository](https://github.com/Azure/azure-cli/issues/new/choose).
