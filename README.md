@@ -3,7 +3,7 @@
 
 With Azure CLI GitHub Action, you can automate your workflow by executing [Azure CLI](https://github.com/Azure/azure-cli) commands to manage Azure resources inside of an Action.
 
-The action executes the Azure CLI Bash script on a user defined Azure CLI version. If the user does not specify a version, the version of Azure CLI installed on agent is used. If there is no version of Azure CLI found on the agent, then action fall backs the version to `latest`.
+The action executes the Azure CLI Bash script on a user defined Azure CLI version. If the user does not specify a version, the version of Azure CLI installed on agent is used. If there is no version of Azure CLI found on the agent, the action falls back the version to `latest`.
 Read more about various Azure CLI versions [here](https://github.com/Azure/azure-cli/releases).
 
 - `azcliversion` – **Optional** Example: 2.30.0, Default: set to az cli version of the agent.
@@ -24,7 +24,7 @@ The definition of this GitHub Action is in [action.yml](https://github.com/Azure
 ## Sample workflow
 
 ### Dependencies on other GitHub Actions
-* [Azure Login](https://github.com/Azure/login) – **Optional** Login with your Azure credentials, required only for authentication via azure credentials. If you use this action, make sure to either use the default value of `azcliversion` or `azcliversion >= 2.30.0` for all the workflows. Authentication via connection strings or keys do not require this step.
+* [Azure Login](https://github.com/Azure/login) – **Optional** Login with your Azure credentials, required only for authentication via Azure credentials. If you use this action, make sure to either use the default value of `azcliversion` or `azcliversion >= 2.30.0` for all the workflows. Authentication via connection strings or keys do not require this step.
 * [Checkout](https://github.com/actions/checkout) – **Optional** To execute the scripts present in your repository.
 
 ### Workflow to execute an Azure CLI script of a specific CLI version
