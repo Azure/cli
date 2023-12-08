@@ -3,7 +3,7 @@
 
 With Azure CLI GitHub Action, you can automate your workflow by executing [Azure CLI](https://github.com/Azure/azure-cli) commands to manage Azure resources inside of an Action.
 
-The action executes the Azure CLI Bash script on a user defined Azure CLI version. If the user does not specify a version, the version of Azure CLI installed on agent is used. If there is no version of Azure CLI found on the agent, the action falls back the version to `latest`.
+The action executes the Azure CLI Bash script on a user defined Azure CLI version. If the user does not specify a version, the version of Azure CLI installed on the agent is used. If there is no version of Azure CLI found on the agent, the action falls back the version to `latest`.
 Read more about various Azure CLI versions [here](https://github.com/Azure/azure-cli/releases).
 
 - `azcliversion` – **Optional** Example: 2.30.0, Default: set to az cli version of the agent.
