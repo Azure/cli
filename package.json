@@ -1,6 +1,6 @@
 {
   "name": "cli",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Automate your GitHub workflows using Azure CLI scripts.",
   "main": "src/main.js",
   "scripts": {
