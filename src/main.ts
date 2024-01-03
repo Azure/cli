@@ -31,12 +31,8 @@ export async function main() {
 
         if (azcliversion == AZ_CLI_VERSION_DEFAULT_VALUE) {
             try {
-                const { stdout, stderr } = await cpExec('az version');
-                if (!stderr) {
-                    azcliversion = JSON.parse(stdout)["azure-cli"]
-                } else {
-                    throw stderr
-                }
+                const { stdout } = await cpExec('az version');
+                azcliversion = JSON.parse(stdout)["azure-cli"]
             } catch (err) {
                 console.log('Failed to fetch az cli version from agent. Reverting back to latest.')
                 azcliversion = 'latest'
