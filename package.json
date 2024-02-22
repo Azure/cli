@@ -15,7 +15,6 @@
   "license": "MIT",
   "devDependencies": {
     "@vercel/ncc": "^0.38.1",
-    "tslint": "^6.1.0",
     "typescript": "^5.3.3"
   },
   "dependencies": {
