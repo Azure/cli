@@ -12,10 +12,18 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Test - Postive
+      - name: Specific test - Postive
         uses: azure/cli@master
         with:
           azcliversion: 2.30.0
+          inlineScript: |
+            az --version
+            az account show --output none
+      
+      - name: Latest version test - Postive
+        uses: azure/cli@master
+        with:
+          azcliversion: latest
           inlineScript: |
             az --version
             az account show --output none
@@ -58,15 +66,6 @@ jobs:
           script: |
             core.setFailed('Last action should fail but not. Please check it.')
 
-      - name: Post to slack on failure
-        if: failure()
-        uses: 8398a7/action-slack@v3.9.1
-        with:
-           status: ${{ job.status }}
-           fields: repo,message,author,action,ref,workflow
-        env:
-           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
   os_test:
     environment: Automation Test
     runs-on: windows-latest
@@ -90,12 +89,3 @@ jobs:
         with:
           script: |
             core.setFailed('Last action should fail but not. Please check it.')
-
-      - name: Post to slack on failure
-        if: failure()
-        uses: 8398a7/action-slack@v3.9.1
-        with:
-           status: ${{ job.status }}
-           fields: repo,message,author,action,ref,workflow
-        env:
-           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
