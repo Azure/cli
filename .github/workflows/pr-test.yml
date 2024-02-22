@@ -1,10 +1,10 @@
 name: pr-test
 on:
   pull_request_target:
-  push:
     branches:
       - master
       - releases/*
+  push:
   workflow_dispatch:
  
 jobs:
