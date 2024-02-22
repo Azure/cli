@@ -2,6 +2,9 @@ on:
   pull_request_target:
     types: [opened]
 
+permissions:
+  pull-requests: write
+
 jobs:
   pull-request:
     runs-on: ubuntu-20.04
