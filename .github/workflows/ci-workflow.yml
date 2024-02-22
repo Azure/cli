@@ -1,8 +1,6 @@
 name: ci-workflow
 on:
   push:
-  schedule:
-    - cron: '0 */3 * * *'
   workflow_dispatch:
  
 jobs:
@@ -10,17 +8,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out source code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
+
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: "16.x"
+          node-version: "20.x"
+
       - run: npm install --production
 
-      - run: sudo npm i -g ts-node
+      - run: npm i -g ts-node
       - run: npm install typescript
 
       - name: Azure CLI Version test
@@ -47,13 +48,3 @@ jobs:
           INPUT_INLINESCRIPT: " "
           EXPECTED_TO: fail
         run: ts-node test/main.test.ts
-        
-      - name: Post to slack on failure
-        if: failure()
-        uses: 8398a7/action-slack@v3.9.1
-        with:
-           status: ${{ job.status }}
-           fields: repo,message,author,action,ref,workflow
-        env:
-           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}  
-      
