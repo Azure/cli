@@ -28,7 +28,7 @@ The definition of this GitHub Action is in [action.yml](https://github.com/Azure
 * [Checkout](https://github.com/actions/checkout) – **Optional** To execute the scripts present in your repository.
 
 ### Workflow to execute an Azure CLI script of a specific CLI version
-```
+```yaml
 # File: .github/workflows/workflow.yml
 
 on: [push]
@@ -56,7 +56,7 @@ jobs:
 ```
 
 ### Workflow to execute an Azure CLI script of a specific CLI version via file present in your repository.
-```
+```yaml
 # File: .github/workflows/workflowForFile.yml
 
 on: [push]
