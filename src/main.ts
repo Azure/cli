@@ -10,6 +10,7 @@ const cpExec = util.promisify(require('child_process').exec);
 import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFile, getCurrentTime, checkIfEnvironmentVariableIsOmitted } from './utils';
 
 const START_SCRIPT_EXECUTION_MARKER: string = "Starting script execution via docker image mcr.microsoft.com/azure-cli:";
+const START_SCRIPT_DIRECT_EXECUTION_MARKER: string = "Starting script execution via az in the agent:";
 const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion'
 const prefix = !!process.env.AZURE_HTTP_USER_AGENT ? `${process.env.AZURE_HTTP_USER_AGENT}` : "";
 
@@ -21,6 +22,7 @@ export async function main() {
 
     var scriptFileName: string = '';
     const CONTAINER_NAME = `MICROSOFT_AZURE_CLI_${getCurrentTime()}_CONTAINER`;
+    let executingInContainer: boolean = true;
     try {
         if (process.env.RUNNER_OS != 'Linux') {
             throw new Error('Please use Linux-based OS as a runner.');
@@ -33,6 +35,8 @@ export async function main() {
             try {
                 const { stdout } = await cpExec('az version');
                 azcliversion = JSON.parse(stdout)["azure-cli"]
+                executingInContainer = false;
+                console.log(`az cli version from agent: ${azcliversion}. It will be used for script execution.`);
             } catch (err) {
                 console.log('Failed to fetch az cli version from agent. Reverting back to latest.')
                 azcliversion = 'latest'
@@ -48,6 +52,21 @@ export async function main() {
             core.error('Please enter a valid script.');
             throw new Error('Please enter a valid script.')
         }
+
+        if (executingInContainer == false) {
+            try {
+                inlineScript = ` set -e >&2; echo '${START_SCRIPT_DIRECT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
+                scriptFileName = await createScriptFile(inlineScript);
+                let args: string[] = ["--noprofile", "--norc", "-e", `${TEMP_DIRECTORY}/${scriptFileName}`];
+                console.log(`${START_SCRIPT_DIRECT_EXECUTION_MARKER}`);
+                await executeBashCommand(args);
+                console.log("az script ran successfully.");
+                return;
+            } catch (err) {
+                console.log('Failed to fetch az cli version from agent. Reverting back to execution in container.')
+            }
+        }
+
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
 
@@ -84,8 +103,10 @@ export async function main() {
         // clean up
         const scriptFilePath: string = path.join(TEMP_DIRECTORY, scriptFileName);
         await deleteFile(scriptFilePath);
-        console.log("cleaning up container...");
-        await executeDockerCommand(["rm", "--force", CONTAINER_NAME], true);
+        if (executingInContainer) {
+            console.log("cleaning up container...");
+            await executeDockerCommand(["rm", "--force", CONTAINER_NAME], true);
+        }
     }
 };
 
@@ -144,6 +165,46 @@ const executeDockerCommand = async (args: string[], continueOnError: boolean = f
     var exitCode;
     try {
         exitCode = await exec.exec(dockerTool, args, execOptions);
+    } catch (error) {
+        if (!continueOnError) {
+            throw error;
+        }
+        core.warning(error);
+    }
+    finally {
+        if (exitCode !== 0 && !continueOnError) {
+            throw new Error(errorStream || 'az cli script failed.');
+        }
+        core.warning(errorStream)
+    }
+}
+
+const executeBashCommand = async (args: string[], continueOnError: boolean = false): Promise<void> => {
+
+    const bash: string = await io.which("bash", true);
+    var errorStream: string = '';
+    var shouldOutputErrorStream: boolean = false;
+    var execOptions: any = {
+        outStream: new NullOutstreamStringWritable({ decodeStrings: false }),
+        listeners: {
+            stdout: (data: any) => console.log(data.toString()), //to log the script output while the script is running.
+            errline: (data: string) => {
+                if (!shouldOutputErrorStream) {
+                    errorStream += data + os.EOL;
+                }
+                else {
+                    console.log(data);
+                }
+                if (data.trim() === START_SCRIPT_EXECUTION_MARKER) {
+                    shouldOutputErrorStream = true;
+                    errorStream = ''; // Flush the container logs. After this, script error logs will be tracked.
+                }
+            }
+        }
+    };
+    var exitCode;
+    try {
+        exitCode = await exec.exec(bash, args, execOptions);
     } catch (error) {
         if (!continueOnError) {
             throw error;

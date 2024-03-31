@@ -6,7 +6,7 @@ inputs:
     description: 'Specify the script here'
     required: true
   azcliversion:
-    description: 'Azure CLI version to be used to execute the script. If not provided, latest version is used'
+    description: 'Azure CLI version to be used to execute the script. If not provided, the version on the agent is used. '
     required: false
     default: 'agentazcliversion'
 branding:
