@@ -73,7 +73,6 @@ jobs:
             core.setFailed('Last action should fail but not. Please check it.')
 
   os_test:
-    environment: Automation Test
     runs-on: windows-latest
     steps:
       - name: Check out source code
