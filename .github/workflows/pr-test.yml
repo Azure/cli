@@ -1,6 +1,6 @@
 name: pr-test
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - master
       - releases/*
@@ -9,7 +9,6 @@ on:
  
 jobs:
   basic_test:
-    environment: Automation Test
     runs-on: ubuntu-latest
     steps:
       - name: Check out source code
@@ -29,24 +28,18 @@ jobs:
         run: |
           ncc build -C -m src/entrypoint.ts
 
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       - name: Test - Postive
         uses: ./
         with:
           azcliversion: 2.30.0
           inlineScript: |
             az --version
-            az account show --output none
       
       - name: Default version test - Postive
         uses: ./
         with:
           inlineScript: |
             az --version
-            az account show --output none
       
       - name: Invalid Version test - Negative
         id: test1
@@ -99,10 +92,6 @@ jobs:
       - name: Compile files
         run: |
           ncc build -C -m src/entrypoint.ts
-
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Invalid OS - Negative
         id: test3
