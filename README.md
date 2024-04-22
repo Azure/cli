@@ -27,7 +27,7 @@ The definition of this GitHub Action is in [action.yml](https://github.com/Azure
 * [Azure Login](https://github.com/Azure/login) – **Optional** Login with your Azure credentials, required only for authentication via Azure credentials. If you use this action, make sure to either use the default value of `azcliversion` or `azcliversion >= 2.30.0` for all the workflows. Authentication via connection strings or keys do not require this step.
 * [Checkout](https://github.com/actions/checkout) – **Optional** To execute the scripts present in your repository.
 
-### Workflow to execute an Azure CLI script of a specific CLI version
+### Workflow to execute an Azure CLI script of the latest Azure CLI version
 ```yaml
 # File: .github/workflows/workflow.yml
 
@@ -49,7 +49,7 @@ jobs:
     - name: Azure CLI script
       uses: azure/cli@v2
       with:
-        azcliversion: 2.30.0
+        azcliversion: latest
         inlineScript: |
           az account show
           az storage -h
