@@ -28,13 +28,20 @@ jobs:
         run: |
           ncc build -C -m src/entrypoint.ts
 
-      - name: Test - Postive
+      - name: Specific version test- Postive
         uses: ./
         with:
           azcliversion: 2.30.0
           inlineScript: |
             az --version
       
+      - name: Latest version test - Postive
+        uses: ./
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az --version
+
       - name: Default version test - Postive
         uses: ./
         with:
