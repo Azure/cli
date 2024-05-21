@@ -3,7 +3,7 @@
 
 With Azure CLI GitHub Action, you can automate your workflow by executing [Azure CLI](https://github.com/Azure/azure-cli) commands to manage Azure resources inside of an Action.
 
-The action executes the Azure CLI Bash script on a user defined Azure CLI version. If the user does not specify a version, the version of Azure CLI installed on the agent is used. If there is no version of Azure CLI found on the agent, the action falls back the version to `latest`.
+The action executes the Azure CLI Bash script on a user defined Azure CLI version. If the user does not specify a version, the version of Azure CLI installed on the agent is used. If there is no version of Azure CLI found on the agent, the action falls back the version to `latest` and it runs inside the container.
 Read more about various Azure CLI versions [here](https://github.com/Azure/azure-cli/releases).
 
 - `azcliversion` – **Optional** Example: 2.30.0, Default: set to az cli version of the agent.
@@ -14,7 +14,7 @@ Azure CLI GitHub Action is supported for the Azure public cloud as well as Azure
 The definition of this GitHub Action is in [action.yml](https://github.com/Azure/CLI/blob/master/action.yml).  The action status is determined by the exit code returned by the script rather than StandardError stream.
 
 > [!NOTE]
-> Please note that the action executes Azure CLI script in a docker container. This means that the action is subjected to potential restrictions which arise from containerized execution. For example:
+> Please note that the action may execute Azure CLI script in a docker container. This means that the action is subjected to potential restrictions which arise from containerized execution. For example:
 > 1. If script sets up an environment variable, it will not take effect in host and hence subsequent actions shouldn't rely on such environment variable.
 > 2. There is some restriction on how cross action file read/write is done. `GITHUB_WORKSPACE` directory in host is mapped to working directory inside container. So, if the action wants to create a file, which will be read by subsequent actions, it should do so within current working directory tree.
 
