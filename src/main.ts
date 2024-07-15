@@ -107,7 +107,7 @@ const getAllAzCliVersions = async (): Promise<Array<string>> => {
             core.warning('Response data does not contain tags.');
         }
     } catch (error) {
-        core.warning(`Unable to fetch all az cli versions with Error: ${error.message}, please verify the URL. Response: ${error.response ? JSON.stringify(error.response.data) : 'No response data'}`);
+        core.warning(`Unable to fetch all az cli versions with Error: ${error.message}. Response: ${error.response ? JSON.stringify(error.response.data) : 'No response data'}`);
     }
     return [];
 };
