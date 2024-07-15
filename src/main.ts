@@ -4,6 +4,7 @@ import * as io from '@actions/io';
 import * as os from 'os';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import axios from 'axios';
 const util = require('util');
 const cpExec = util.promisify(require('child_process').exec);
 
@@ -98,28 +99,20 @@ const checkIfValidCLIVersion = async (azcliversion: string): Promise<boolean> =>
 }
 
 const getAllAzCliVersions = async (): Promise<Array<string>> => {
-    var outStream: string = '';
-    var execOptions: any = {
-        outStream: new NullOutstreamStringWritable({ decodeStrings: false }),
-        listeners: {
-            stdout: (data: any) => outStream += data.toString() + os.EOL, //outstream contains the list of all the az cli versions
-        }
-    };
-
     try {
-        await exec.exec("curl", ["--location", "-s", "https://mcr.microsoft.com/v2/azure-cli/tags/list"], execOptions)
-        if (outStream && JSON.parse(outStream).tags) {
-            return JSON.parse(outStream).tags;
+        const response = await axios.get('https://mcr.microsoft.com/v2/azure-cli/tags/list');
+        if (response.data && response.data.tags) {
+            return response.data.tags;
+        } else {
+            core.warning('Response data does not contain tags.');
         }
     } catch (error) {
-        // if output is 404 page not found, please verify the url
-        core.warning(`Unable to fetch all az cli versions, please report it as an issue on https://github.com/Azure/CLI/issues. Output: ${outStream}, Error: ${error}`);
+        core.warning(`Unable to fetch all az cli versions with Error: ${error.message}, please verify the URL. Response: ${error.response ? JSON.stringify(error.response.data) : 'No response data'}`);
     }
     return [];
-}
+};
 
 const executeDockerCommand = async (args: string[], continueOnError: boolean = false): Promise<void> => {
-
     const dockerTool: string = await io.which("docker", true);
     var errorStream: string = '';
     var shouldOutputErrorStream: boolean = false;
