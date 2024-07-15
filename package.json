@@ -21,8 +21,7 @@
     "@actions/core": "^1.10.0",
     "@actions/exec": "^1.0.1",
     "@actions/io": "^1.0.1",
-    "@types/node": "^20.11.1",
-    "axios": "^1.7.2"
+    "@types/node": "^20.11.1"
   },
   "bugs": {
     "url": "https://github.com/Azure/CLI/issues"

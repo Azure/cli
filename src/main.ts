@@ -4,7 +4,6 @@ import * as io from '@actions/io';
 import * as os from 'os';
 import * as path from 'path';
 import * as crypto from 'crypto';
-import axios from 'axios';
 const util = require('util');
 const cpExec = util.promisify(require('child_process').exec);
 
@@ -100,14 +99,21 @@ const checkIfValidCLIVersion = async (azcliversion: string): Promise<boolean> =>
 
 const getAllAzCliVersions = async (): Promise<Array<string>> => {
     try {
-        const response = await axios.get('https://mcr.microsoft.com/v2/azure-cli/tags/list');
-        if (response.data && response.data.tags) {
-            return response.data.tags;
-        } else {
-            core.warning('Response data does not contain tags.');
+        const response = await fetch('https://mcr.microsoft.com/v2/azure-cli/tags/list');
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP error! status: ${response.status}, errorText: ${errorText}`);
         }
-    } catch (error) {
-        core.warning(`Unable to fetch all az cli versions with Error: ${error.message}. Response: ${error.response ? JSON.stringify(error.response.data) : 'No response data'}`);
+        const data = await response.json();
+        if (data && data.tags) {
+            return data.tags;
+        }
+        else {
+            throw new Error('Response data does not contain tags.');
+        }
+    }
+    catch (error) {
+        core.warning(`Unable to fetch all az cli versions with Error: ${error.message}.`);
     }
     return [];
 };
