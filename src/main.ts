@@ -12,6 +12,7 @@ import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFi
 const START_SCRIPT_EXECUTION_MARKER: string = "Starting script execution via docker image mcr.microsoft.com/azure-cli:";
 const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion'
 const prefix = !!process.env.AZURE_HTTP_USER_AGENT ? `${process.env.AZURE_HTTP_USER_AGENT}` : "";
+const AZ_CLI_TAG_lIST_URL = "https://mcr.microsoft.com/v2/azure-cli/tags/list";
 
 export async function main() {
     let usrAgentRepo = crypto.createHash('sha256').update(`${process.env.GITHUB_REPOSITORY}`).digest('hex');
@@ -99,7 +100,7 @@ const checkIfValidCLIVersion = async (azcliversion: string): Promise<boolean> =>
 
 const getAllAzCliVersions = async (): Promise<Array<string>> => {
     try {
-        const response = await fetch('https://mcr.microsoft.com/v2/azure-cli/tags/list');
+        const response = await fetch(AZ_CLI_TAG_lIST_URL);
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`HTTP error! status: ${response.status}, errorText: ${errorText}`);
@@ -113,7 +114,7 @@ const getAllAzCliVersions = async (): Promise<Array<string>> => {
         }
     }
     catch (error) {
-        core.warning(`Unable to fetch all az cli versions with Error: ${error.message}.`);
+        core.warning(`Unable to fetch all az cli versions with Error: ${error}. Skipping the version check.`);
     }
     return [];
 };
