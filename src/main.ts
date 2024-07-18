@@ -12,6 +12,7 @@ import { createScriptFile, TEMP_DIRECTORY, NullOutstreamStringWritable, deleteFi
 const START_SCRIPT_EXECUTION_MARKER: string = "Starting script execution via docker image mcr.microsoft.com/azure-cli:";
 const AZ_CLI_VERSION_DEFAULT_VALUE = 'agentazcliversion'
 const prefix = !!process.env.AZURE_HTTP_USER_AGENT ? `${process.env.AZURE_HTTP_USER_AGENT}` : "";
+const AZ_CLI_TAG_lIST_URL = "https://mcr.microsoft.com/v2/azure-cli/tags/list";
 
 export async function main() {
     let usrAgentRepo = crypto.createHash('sha256').update(`${process.env.GITHUB_REPOSITORY}`).digest('hex');
@@ -98,28 +99,27 @@ const checkIfValidCLIVersion = async (azcliversion: string): Promise<boolean> =>
 }
 
 const getAllAzCliVersions = async (): Promise<Array<string>> => {
-    var outStream: string = '';
-    var execOptions: any = {
-        outStream: new NullOutstreamStringWritable({ decodeStrings: false }),
-        listeners: {
-            stdout: (data: any) => outStream += data.toString() + os.EOL, //outstream contains the list of all the az cli versions
-        }
-    };
-
     try {
-        await exec.exec("curl", ["--location", "-s", "https://mcr.microsoft.com/v2/azure-cli/tags/list"], execOptions)
-        if (outStream && JSON.parse(outStream).tags) {
-            return JSON.parse(outStream).tags;
+        const response = await fetch(AZ_CLI_TAG_lIST_URL);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP error! status: ${response.status}, errorText: ${errorText}`);
         }
-    } catch (error) {
-        // if output is 404 page not found, please verify the url
-        core.warning(`Unable to fetch all az cli versions, please report it as an issue on https://github.com/Azure/CLI/issues. Output: ${outStream}, Error: ${error}`);
+        const data = await response.json();
+        if (data && data.tags) {
+            return data.tags;
+        }
+        else {
+            throw new Error('Response data does not contain tags.');
+        }
+    }
+    catch (error) {
+        core.warning(`Unable to fetch all az cli versions with Error: ${error}. Skipping the version check.`);
     }
     return [];
-}
+};
 
 const executeDockerCommand = async (args: string[], continueOnError: boolean = false): Promise<void> => {
-
     const dockerTool: string = await io.which("docker", true);
     var errorStream: string = '';
     var shouldOutputErrorStream: boolean = false;
