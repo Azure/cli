@@ -17,7 +17,7 @@ const AZ_CLI_TAG_lIST_URL = "https://mcr.microsoft.com/v2/azure-cli/tags/list";
 export async function main() {
     let usrAgentRepo = crypto.createHash('sha256').update(`${process.env.GITHUB_REPOSITORY}`).digest('hex');
     let actionName = 'AzureCLIAction';
-    let userAgentString = (!!prefix ? `${prefix}+` : '') + `GITHUBACTIONS/${actionName}_${usrAgentRepo}`;
+    let userAgentString = (!!prefix ? `${prefix}+` : '') + `GITHUBACTIONS/${actionName}@v2_${usrAgentRepo}_${process.env.RUNNER_ENVIRONMENT}_${process.env.GITHUB_RUN_ID}`;
     process.env.AZURE_HTTP_USER_AGENT = userAgentString;
 
     var scriptFileName: string = '';
