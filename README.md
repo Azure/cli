@@ -1,7 +1,8 @@
 # GitHub Action for Azure CLI
 
 > [!WARNING]
-> The base image of Azure CLI's docker image is switched to Azure Linux since version `2.64.0`. The `az` commands will remain unaffected. To ensure a smooth transition, please migrate Alpine-specific commands to Azure Linux commands in azure/cli action. For more information: https://go.microsoft.com/fwlink/?linkid=2282203.
+> The base image of Azure CLI's docker image is switched to Azure Linux since version `2.64.0`. The `az` commands will remain unaffected. To ensure a smooth transition, please migrate Alpine-specific commands to Azure Linux commands in azure/cli action. For more information, see https://go.microsoft.com/fwlink/?linkid=2282203.
+
 
 With Azure CLI GitHub Action, you can automate your workflow by executing [Azure CLI](https://github.com/Azure/azure-cli) commands to manage Azure resources inside of an Action.
 
