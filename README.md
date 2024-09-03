@@ -3,7 +3,6 @@
 > [!WARNING]
 > The base image of Azure CLI's docker image is switched to Azure Linux since version `2.64.0`. The `az` commands will remain unaffected. To ensure a smooth transition, please migrate Alpine-specific commands to Azure Linux commands in azure/cli action. For more information, see https://go.microsoft.com/fwlink/?linkid=2282203.
 
-
 With Azure CLI GitHub Action, you can automate your workflow by executing [Azure CLI](https://github.com/Azure/azure-cli) commands to manage Azure resources inside of an Action.
 
 The action executes the Azure CLI Bash script on a user defined Azure CLI version. If the user does not specify a version, the version of Azure CLI installed on the agent is used. If there is no version of Azure CLI found on the agent, the action falls back the version to `latest`.
