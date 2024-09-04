@@ -1,7 +1,7 @@
 # GitHub Action for Azure CLI
 
 > [!WARNING]
-> Starting with Azure CLI version `2.64.0`, the Azure CLI docker image will be based of Azure Linux. The `az` commands are not affected by this change. To ensure the compatibility of your pipelines, please migrate Alpine-specific commands to Azure Linux commands in the scripts used in the azure/cli action.
+> Starting with Azure CLI version `2.64.0`, the Azure CLI docker image will be based on Azure Linux. The `az` commands are not affected by this change. To ensure the compatibility of your pipelines, please migrate Alpine-specific commands to Azure Linux commands in the scripts used in the azure/cli action.
 > 
 > For more information, see https://go.microsoft.com/fwlink/?linkid=2282203.
 
