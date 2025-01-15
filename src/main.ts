@@ -52,6 +52,9 @@ export async function main() {
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
 
+        const azureConfigDir = process.env.AZURE_CONFIG_DIR || path.join(process.env.HOME, '.azure'); 
+        process.env.AZURE_CONFIG_DIR = '/root/.azure';
+        
         /*
         For the docker run command, we are doing the following
         - Set the working directory for docker continer
@@ -61,7 +64,7 @@ export async function main() {
         */
         let args: string[] = ["run", "--workdir", `${process.env.GITHUB_WORKSPACE}`,
             "-v", `${process.env.GITHUB_WORKSPACE}:${process.env.GITHUB_WORKSPACE}`,
-            "-v", `${process.env.HOME}/.azure:/root/.azure`,
+            "-v", `${azureConfigDir}:${process.env.AZURE_CONFIG_DIR}`,
             "-v", `${TEMP_DIRECTORY}:${TEMP_DIRECTORY}`
         ];
         for (let key in process.env) {
