@@ -59,7 +59,7 @@ export async function main() {
         For the docker run command, we are doing the following
         - Set the working directory for docker continer
         - volume mount the GITHUB_WORKSPACE env variable (path where users checkout code is present) to work directory of container
-        - voulme mount Azure config directory between host and container,
+        - volume mount Azure config directory between host and container,
         - volume mount temp directory between host and container, inline script file is created in temp directory
         */
         let args: string[] = ["run", "--workdir", `${process.env.GITHUB_WORKSPACE}`,
