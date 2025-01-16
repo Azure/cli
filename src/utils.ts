@@ -69,7 +69,8 @@ export const checkIfEnvironmentVariableIsOmitted = (key: string): boolean => {
         'JOURNAL_STREAM',
         'DEPLOYMENT_BASEPATH',
         'VCPKG_INSTALLATION_ROOT',
-        'PERFLOG_LOCATION_SETTING'
+        'PERFLOG_LOCATION_SETTING',
+        'AZURE_CONFIG_DIR'
     ];
 
     const omitEnvironmentVariablesWithPrefix: string [] = [
