@@ -72,7 +72,6 @@ export async function main() {
                 args.push("-e", `${key}=${process.env[key]}`);
             }
         }
-        args.push("-e", `AZURE_CONFIG_DIR=${containerAzureConfigDir}`);
         args.push("--name", CONTAINER_NAME,
             `mcr.microsoft.com/azure-cli:${azcliversion}`,
             "bash", "--noprofile", "--norc", "-e", `${TEMP_DIRECTORY}/${scriptFileName}`);
