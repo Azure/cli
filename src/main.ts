@@ -52,19 +52,19 @@ export async function main() {
         inlineScript = ` set -e >&2; echo '${START_SCRIPT_EXECUTION_MARKER}' >&2; ${inlineScript}`;
         scriptFileName = await createScriptFile(inlineScript);
 
-        const azureConfigDir = process.env.AZURE_CONFIG_DIR || path.join(process.env.HOME, '.azure'); 
-        process.env.AZURE_CONFIG_DIR = '/root/.azure';
+        const hostAzureConfigDir = process.env.AZURE_CONFIG_DIR || path.join(process.env.HOME, '.azure');
+        const containerAzureConfigDir = '/root/.azure';
         
         /*
         For the docker run command, we are doing the following
         - Set the working directory for docker continer
         - volume mount the GITHUB_WORKSPACE env variable (path where users checkout code is present) to work directory of container
-        - voulme mount .azure session token file between host and container,
+        - voulme mount Azure config directory between host and container,
         - volume mount temp directory between host and container, inline script file is created in temp directory
         */
         let args: string[] = ["run", "--workdir", `${process.env.GITHUB_WORKSPACE}`,
             "-v", `${process.env.GITHUB_WORKSPACE}:${process.env.GITHUB_WORKSPACE}`,
-            "-v", `${azureConfigDir}:${process.env.AZURE_CONFIG_DIR}`,
+            "-v", `${hostAzureConfigDir}:${containerAzureConfigDir}`,
             "-v", `${TEMP_DIRECTORY}:${TEMP_DIRECTORY}`
         ];
         for (let key in process.env) {
@@ -72,6 +72,7 @@ export async function main() {
                 args.push("-e", `${key}=${process.env[key]}`);
             }
         }
+        args.push("-e", `AZURE_CONFIG_DIR=${containerAzureConfigDir}`);
         args.push("--name", CONTAINER_NAME,
             `mcr.microsoft.com/azure-cli:${azcliversion}`,
             "bash", "--noprofile", "--norc", "-e", `${TEMP_DIRECTORY}/${scriptFileName}`);
