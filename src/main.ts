@@ -41,8 +41,8 @@ export async function main() {
         }
 
         if (!(await checkIfValidCLIVersion(azcliversion))) {
-            core.error('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.');
-            throw new Error('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases.')
+            core.error('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases');
+            throw new Error('Please enter a valid azure cli version. \nSee available versions: https://github.com/Azure/azure-cli/releases')
         }
 
         if (!inlineScript.trim()) {
