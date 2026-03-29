@@ -46,7 +46,7 @@ jobs:
       
       - name: Check Last step failed
         if: steps.test1.outcome == 'success'
-        uses: actions/github-script@v3
+        uses: actions/github-script@v8
         with:
           script: |
             core.setFailed('Last action should fail but not. Please check it.')
@@ -61,7 +61,7 @@ jobs:
 
       - name: Check Last step failed
         if: steps.test2.outcome == 'success'
-        uses: actions/github-script@v3
+        uses: actions/github-script@v8
         with:
           script: |
             core.setFailed('Last action should fail but not. Please check it.')
@@ -84,7 +84,7 @@ jobs:
 
       - name: Check Last step failed
         if: steps.test3.outcome == 'success'
-        uses: actions/github-script@v3
+        uses: actions/github-script@v8
         with:
           script: |
             core.setFailed('Last action should fail but not. Please check it.')
