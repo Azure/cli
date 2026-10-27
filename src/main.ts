@@ -55,14 +55,22 @@ export async function main() {
         const hostAzureConfigDir = process.env.AZURE_CONFIG_DIR || path.join(process.env.HOME, '.azure');
         const containerAzureConfigDir = '/root/.azure';
         
+        // Get current user's UID and GID
+        const { stdout: uidOutput } = await cpExec('id -u');
+        const { stdout: gidOutput } = await cpExec('id -g');
+        const uid = uidOutput.trim();
+        const gid = gidOutput.trim();
+        
         /*
         For the docker run command, we are doing the following
         - Set the working directory for docker continer
         - volume mount the GITHUB_WORKSPACE env variable (path where users checkout code is present) to work directory of container
         - volume mount Azure config directory between host and container,
         - volume mount temp directory between host and container, inline script file is created in temp directory
+        - Set the user to match the host's UID and GID to ensure proper file ownership
         */
         let args: string[] = ["run", "--workdir", `${process.env.GITHUB_WORKSPACE}`,
+            "--user", `${uid}:${gid}`,
             "-v", `${process.env.GITHUB_WORKSPACE}:${process.env.GITHUB_WORKSPACE}`,
             "-v", `${hostAzureConfigDir}:${containerAzureConfigDir}`,
             "-v", `${TEMP_DIRECTORY}:${TEMP_DIRECTORY}`
@@ -160,3 +168,4 @@ const executeDockerCommand = async (args: string[], continueOnError: boolean = f
         core.warning(errorStream)
     }
 }
+
